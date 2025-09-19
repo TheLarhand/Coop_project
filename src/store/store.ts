@@ -5,12 +5,7 @@ import { testSlice } from './slices/testSlice';
 export const store = configureStore({
   reducer: {
       test: testSlice.reducer,
-
-    // Когда реализуете слайсы раскомментете 
-
-    //  users: usersSlice.reducer,
-    //  tasks: tasksSlice.reducer,
-    //  auth: authSlice.reducer,
+    // Когда реализуете слайсы добавите их 
   },
 });
 

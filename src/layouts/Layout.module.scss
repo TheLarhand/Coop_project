@@ -1,0 +1,38 @@
+@use '../styles/abstracts/variables' as *;
+
+.header {
+    width: 100%;
+    border-bottom: 3px solid $primary-color;
+    height: 100px;
+    &__content {
+        width: $layout-size;
+        margin: 0 auto;
+        display: flex;
+        height: 100%;
+        justify-content: space-between;
+        align-items: center;
+    }
+}
+
+.layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.content {
+  flex: 1;
+  width: $layout-size;
+  margin: $margin-md auto;
+}
+
+.footer {
+  width: 100%;
+  border-top: 3px solid $primary-color;
+  height: 200px;
+
+  &__content {
+    width: $layout-size;
+    margin: 0 auto;
+  }
+}

@@ -1,0 +1,46 @@
+@use '../../styles/abstracts/variables' as *;
+
+.wrapper {
+  padding: 24px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.clicker {
+  background: $bg-color;
+  padding: 24px;
+  border-radius: 12px;
+  border: 1px solid $primary-color;
+  text-align: center;
+  
+  h3 {
+    margin: 0 0 24px 0;
+    color: $secondary-color;
+    font-size: 18px;
+  }
+}
+
+.counterDisplay {
+  font-size: 48px;
+  font-weight: bold;
+  color: $primary-color;
+  margin-bottom: $margin-lg;
+  padding: $padding-md;
+  border: 2px solid $secondary-color;
+  border-radius: 8px;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  
+  button {
+    min-width: 60px;
+  }
+}

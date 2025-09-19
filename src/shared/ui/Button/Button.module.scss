@@ -1,0 +1,28 @@
+@use '../../../styles/abstracts/variables' as *;
+
+.wrapper {
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+    
+    &:hover {
+      transform: none;
+      box-shadow: none;
+    }
+  }
+}
+
+.primary {
+  background-color: $primary-color;
+}
+
+.secondary {
+  background-color: $secondary-color;
+}
+
+.danger {
+  background-color: $danger-color;
+}

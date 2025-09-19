@@ -5,6 +5,8 @@ import MyTasksPage from './pages/MyTasksPage';
 import DelegatedTasksPage from './pages/DelegatedTasksPage';
 import CreateTaskPage from './pages/CreateTaskPage';
 import ProfilePage from './pages/ProfilePage/ProfilePage.tsx';
+import CreateTaskPage from './pages/CreateTask/CreateTaskPage';
+import ProfilePage from './pages/ProfilePage/ProfilePage';
 
 function App() {
   //Это главный компонент здесь подключаются глобальные компоненты реализуется роутинг

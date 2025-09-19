@@ -1,7 +1,7 @@
 @use '../../../styles/abstracts/variables' as *;
 
 .wrapper {
-  
+  color: $text-color-inverse;
   &:disabled {
     opacity: 0.6;
     cursor: not-allowed;

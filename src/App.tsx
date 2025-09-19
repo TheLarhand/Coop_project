@@ -4,7 +4,7 @@ import StatisticPage from './pages/StatisticPage';
 import MyTasksPage from './pages/MyTasksPage';
 import DelegatedTasksPage from './pages/DelegatedTasksPage';
 import CreateTaskPage from './pages/CreateTaskPage';
-import ProfilePage from './pages/ProfilePage';
+import ProfilePage from './pages/ProfilePage/ProfilePage.tsx';
 
 function App() {
   //Это главный компонент здесь подключаются глобальные компоненты реализуется роутинг

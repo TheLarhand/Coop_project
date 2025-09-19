@@ -1,11 +1,16 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { testSlice } from './slices/testSlice';
+import { authSlice } from "./slices/authSlice.ts";
+import { usersSlice } from "./slices/usersSlice.ts";
+import {profileSlice} from "./slices/profileSlice.ts";
 
 // Конфигурация Redux store с подключенными редьюсерами
 export const store = configureStore({
   reducer: {
       test: testSlice.reducer,
-    // Когда реализуете слайсы добавите их 
+      auth: authSlice.reducer,
+      users: usersSlice.reducer,
+      profile: profileSlice.reducer,
   },
 });
 

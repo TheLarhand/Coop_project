@@ -4,7 +4,6 @@ import {useDispatch, useSelector} from 'react-redux';
 import type {AppDispatch} from "../../store/store.ts";
 import {login, selectIsAuthenticated} from "../../store/slices/authSlice.ts";
 import s from "./ProfilePage.module.scss";
-import closeModal from "../../../public/closeModal.svg"
 import {
     fetchProfile,
     selectProfile,
@@ -47,11 +46,10 @@ const ProfilePage: React.FC = () => {
 
     const handleAuth = async (e?: React.FormEvent) => {
         e?.preventDefault();
-        if (didAuth.current) return;
+        if (didAuth) return;
         try {
             await dispatch(login({ username: userName, password: password })).unwrap();
             await dispatch(fetchProfile()).unwrap();
-            didAuth.current = true;
             clearModal()
             console.log("Auth!");
         } catch (error) {
@@ -62,7 +60,7 @@ const ProfilePage: React.FC = () => {
 
     return (
     <MainLayout>
-        {modalOpen && !didAuth.current && (
+        {modalOpen && !didAuth && (
             <div className={s.modalBackground}>
                 <div className={s.formContainer}>
                     <img className={s.formContainer__closeModal} src={"/closeModal.svg"}  alt={"closeModal_icon"} onClick={toggleModal}/>
@@ -79,7 +77,7 @@ const ProfilePage: React.FC = () => {
             </div>
         )}
 
-        {!didAuth.current && (
+        {!didAuth && (
             <button type={"button"} onClick={toggleModal}>Auth</button>
         )}
 
@@ -91,7 +89,7 @@ const ProfilePage: React.FC = () => {
             <div>Загрузка профиля...</div>
         )}
 
-        {didAuth.current && profile && !loading && !error && (
+        {didAuth && profile && !loading && !error && (
             <div className={s.userContainer}>
                 <img className={s.userAvatar} src={profile.ava} alt={"user_image"} />
                 <span className={s.userName}>Имя: {profile.name}</span>

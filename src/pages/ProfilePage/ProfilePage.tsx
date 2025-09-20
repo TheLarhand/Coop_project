@@ -65,7 +65,7 @@ const ProfilePage: React.FC = () => {
         {modalOpen && !didAuth.current && (
             <div className={s.modalBackground}>
                 <div className={s.formContainer}>
-                    <img className={s.formContainer__closeModal} src={closeModal}  alt={"closeModal_icon"} onClick={toggleModal}/>
+                    <img className={s.formContainer__closeModal} src={"/closeModal.svg"}  alt={"closeModal_icon"} onClick={toggleModal}/>
                     <form className={s.formContainer__form} onSubmit={handleAuth}>
                         <h2 className={s.formContainer__form__title}>Auth Form</h2>
                         <input placeholder={"username"} value={userName} required={true} onChange={handleChangeUsername}></input>

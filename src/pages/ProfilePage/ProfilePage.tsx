@@ -2,9 +2,10 @@ import MainLayout from '../../layouts/MainLayout.tsx'
 import React, {useState} from "react";
 import {useDispatch, useSelector} from 'react-redux';
 import type {AppDispatch} from "../../store/store.ts";
-import {login, selectIsAuthenticated} from "../../store/slices/authSlice.ts";
+import {login, logOut, selectIsAuthenticated} from "../../store/slices/authSlice.ts";
 import s from "./ProfilePage.module.scss";
 import {
+    clearProfile,
     fetchProfile,
     selectProfile,
     selectProfileError,
@@ -58,6 +59,11 @@ const ProfilePage: React.FC = () => {
         }
     }
 
+    const handleLogOut = () => {
+        dispatch(logOut());
+        dispatch(clearProfile());
+    }
+
     return (
     <MainLayout>
         {modalOpen && !didAuth && (
@@ -77,9 +83,9 @@ const ProfilePage: React.FC = () => {
             </div>
         )}
 
-        {!didAuth && (
-            <button type={"button"} onClick={toggleModal}>Auth</button>
-        )}
+        <button type="button" onClick={didAuth ? handleLogOut : toggleModal}>
+            {didAuth ? 'Log Out' : 'Auth'}
+        </button>
 
         {error && (
             <div>Произошла ошибка: {error}</div>

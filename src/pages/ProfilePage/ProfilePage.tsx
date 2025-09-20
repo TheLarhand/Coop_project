@@ -14,7 +14,7 @@ import {
 
 const ProfilePage: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
-    const didAuth = useRef<boolean>(false);
+    const didAuth = useSelector(selectIsAuthenticated)
 
     const [userName, setUserName] = useState<string>('');
     const [password, setPassword] = useState<string>('');

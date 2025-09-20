@@ -2,7 +2,7 @@ import MainLayout from '../../layouts/MainLayout.tsx'
 import React, {useRef, useState} from "react";
 import {useDispatch, useSelector} from 'react-redux';
 import type {AppDispatch} from "../../store/store.ts";
-import {login} from "../../store/slices/authSlice.ts";
+import {login, selectIsAuthenticated} from "../../store/slices/authSlice.ts";
 import s from "./ProfilePage.module.scss";
 import closeModal from "../../../public/closeModal.svg"
 import {

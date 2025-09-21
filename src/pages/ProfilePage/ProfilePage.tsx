@@ -1,8 +1,8 @@
 import MainLayout from '../../layouts/MainLayout.tsx'
-import React, {useState} from "react";
-import {useDispatch, useSelector} from 'react-redux';
-import type {AppDispatch} from "../../store/store.ts";
-import {login, logOut, selectIsAuthenticated} from "../../store/slices/authSlice.ts";
+import React, { useState } from "react";
+import { useDispatch, useSelector } from 'react-redux';
+import type { AppDispatch } from "../../store/store.ts";
+import { login, logOut, selectIsAuthenticated } from "../../store/slices/authSlice.ts";
 import s from "./ProfilePage.module.scss";
 import {
     clearProfile,
@@ -65,43 +65,43 @@ const ProfilePage: React.FC = () => {
     }
 
     return (
-    <MainLayout>
-        {modalOpen && !didAuth && (
-            <div className={s.modalBackground}>
-                <div className={s.formContainer}>
-                    <img className={s.formContainer__closeModal} src={"/closeModal.svg"}  alt={"closeModal_icon"} onClick={toggleModal}/>
-                    <form className={s.formContainer__form} onSubmit={handleAuth}>
-                        <h2 className={s.formContainer__form__title}>Auth Form</h2>
-                        <input placeholder={"username"} value={userName} required={true} onChange={handleChangeUsername}></input>
-                        <input placeholder={"password"} value={password} required={true} onChange={handleChangePassword}></input>
-                        <button type={"submit"}>Auth</button>
-                        {modalError && (
-                            <span className={s.formContainer__error}>{modalError}</span>
-                        )}
-                    </form>
+        <MainLayout>
+            {modalOpen && !didAuth && (
+                <div className={s.modalBackground}>
+                    <div className={s.formContainer}>
+                        <img className={s.formContainer__closeModal} src={"/closeModal.svg"} alt={"closeModal_icon"} onClick={toggleModal} />
+                        <form className={s.formContainer__form} onSubmit={handleAuth}>
+                            <h2 className={s.formContainer__form__title}>Auth Form</h2>
+                            <input placeholder={"username"} value={userName} required={true} onChange={handleChangeUsername}></input>
+                            <input placeholder={"password"} value={password} required={true} onChange={handleChangePassword}></input>
+                            <button type={"submit"}>Auth</button>
+                            {modalError && (
+                                <span className={s.formContainer__error}>{modalError}</span>
+                            )}
+                        </form>
+                    </div>
                 </div>
-            </div>
-        )}
+            )}
 
-        <button type="button" onClick={didAuth ? handleLogOut : toggleModal}>
-            {didAuth ? 'Log Out' : 'Auth'}
-        </button>
+            <button type="button" onClick={didAuth ? handleLogOut : toggleModal}>
+                {didAuth ? 'Log Out' : 'Auth'}
+            </button>
 
-        {error && (
-            <div>Произошла ошибка: {error}</div>
-        )}
+            {error && (
+                <div>Произошла ошибка: {error}</div>
+            )}
 
-        {loading && !error && (
-            <div>Загрузка профиля...</div>
-        )}
+            {loading && !error && (
+                <div>Загрузка профиля...</div>
+            )}
 
-        {didAuth && profile && !loading && !error && (
-            <div className={s.userContainer}>
-                <img className={s.userAvatar} src={profile.ava} alt={"user_image"} />
-                <span className={s.userName}>Имя: {profile.name}</span>
-            </div>
-        )}
-    </MainLayout>
+            {didAuth && profile && !loading && !error && (
+                <div className={s.userContainer}>
+                    <img className={s.userAvatar} src={profile.ava} alt={"user_image"} />
+                    <span className={s.userName}>Имя: {profile.name}</span>
+                </div>
+            )}
+        </MainLayout>
     )
 }
 

@@ -2,12 +2,13 @@
 
 .wrapper {
   color: $text-color-inverse;
+
   &:disabled {
     opacity: 0.6;
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
-    
+
     &:hover {
       transform: none;
       box-shadow: none;

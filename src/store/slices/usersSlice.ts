@@ -19,7 +19,7 @@ export const fetchUsers = createAsyncThunk<
     User[],
     void,
     { state: RootState; rejectValue: string }
-    >("users/fetchUsers", async (_, { getState, rejectWithValue }) => {
+>("users/fetchUsers", async (_, { getState, rejectWithValue }) => {
     const { username, password, isAuthenticated } = getState().auth;
 
     try {

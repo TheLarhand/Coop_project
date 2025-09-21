@@ -10,18 +10,18 @@ interface ButtonProps {
   variant?: 'primary' | 'secondary' | 'danger'
 }
 
-function Button({ 
-  children, 
-  onClick, 
-  type = 'button', 
-  disabled = false, 
+function Button({
+  children,
+  onClick,
+  type = 'button',
+  disabled = false,
   className = '',
   variant = 'primary'
 }: ButtonProps) {
   const buttonClasses = `${s.wrapper} ${s[variant]} ${className}`.trim()
 
   return (
-    <button 
+    <button
       className={buttonClasses}
       onClick={onClick}
       type={type}

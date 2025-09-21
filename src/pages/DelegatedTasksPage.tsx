@@ -3,7 +3,7 @@ import MainLayout from '../layouts/MainLayout'
 function DelegatedTasksPage() {
   return (
     <MainLayout>
-        DelegatedTasksPage
+      DelegatedTasksPage
     </MainLayout>
   )
 }

@@ -8,8 +8,8 @@ function TestPage() {
     <div>
       <MainLayout>
         <h1>Тестовая страница</h1>
-        <ApiStatus/>
-        <Clicker/>
+        <ApiStatus />
+        <Clicker />
       </MainLayout>
     </div>
   );

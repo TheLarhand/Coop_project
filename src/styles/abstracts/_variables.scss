@@ -1,18 +1,21 @@
+// Импорт модуля цветов
+@use "sass:color";
+
 // Все цвета проекта
-$color-teal-1: #1abc9c;  // Turquoise
-$color-teal-2: #16a085;  // Green sea
+$color-teal-1: #1abc9c; // Turquoise
+$color-teal-2: #16a085; // Green sea
 
 $color-green-1: #2ecc71; // Emerald
 $color-green-2: #27ae60; // Nephritis
 
-$color-blue-1: #3498db;  // Peter river
-$color-blue-2: #2980b9;  // Belize hole
+$color-blue-1: #3498db; // Peter river
+$color-blue-2: #2980b9; // Belize hole
 
 $color-purple-1: #9b59b6; // Amethyst
 $color-purple-2: #8e44ad; // Wisteria
 
-$color-dark-1: #34495e;   // Wet asphalt
-$color-dark-2: #2c3e50;   // Midnight blue
+$color-dark-1: #34495e; // Wet asphalt
+$color-dark-2: #2c3e50; // Midnight blue
 
 $color-yellow-1: #f1c40f; // Sun flower
 $color-yellow-2: #f39c12; // Orange
@@ -20,27 +23,27 @@ $color-yellow-2: #f39c12; // Orange
 $color-orange-1: #e67e22; // Carrot
 $color-orange-2: #d35400; // Pumpkin
 
-$color-red-1: #e74c3c;    // Alizarin
-$color-red-2: #c0392b;    // Pomegranate
+$color-red-1: #e74c3c; // Alizarin
+$color-red-2: #c0392b; // Pomegranate
 
-$color-grey-1: #ecf0f1;   // Clouds
-$color-grey-2: #bdc3c7;   // Silver
-$color-grey-3: #95a5a6;   // Concrete
-$color-grey-4: #7f8c8d;   // Asbestos
+$color-grey-1: #ecf0f1; // Clouds
+$color-grey-2: #bdc3c7; // Silver
+$color-grey-3: #95a5a6; // Concrete
+$color-grey-4: #7f8c8d; // Asbestos
 
 $color-white: #fff;
 
 
 // Основные цвета
-$primary-color:   $color-teal-1;
+$primary-color: $color-teal-1;
 $secondary-color: $color-dark-1;
-$success-color:   $color-green-1;
-$danger-color:    $color-red-1;
+$success-color: $color-green-1;
+$danger-color: $color-red-1;
 
-$primary-hover-color: darken($primary-color, 7%);
-$secondary-hover-color: darken($secondary-color, 7%);
-$success-hover-color: darken($success-color, 7%);
-$danger-hover-color: darken($danger-color, 7%);
+$primary-hover-color: color.adjust($primary-color, $lightness: -7%);
+$secondary-hover-color: color.adjust($secondary-color, $lightness: -7%);
+$success-hover-color: color.adjust($success-color, $lightness: -7%);
+$danger-hover-color: color.adjust($danger-color, $lightness: -7%);
 
 $bg-color: $color-white;
 $border-color: $color-grey-3;
@@ -52,10 +55,10 @@ $text-color-light: $color-grey-4;
 $text-color-inverse: $color-white;
 
 // Отступы 
-$space-xs:  8px;
-$space-sm:  12px;
-$space-md:  16px;
-$space-lg:  24px;
+$space-xs: 8px;
+$space-sm: 12px;
+$space-md: 16px;
+$space-lg: 24px;
 
 // Размеры
 $font-size-sm: 12px;
@@ -69,9 +72,9 @@ $radius-md: 8px;
 $radius-lg: 12px;
 
 // Тени
-$shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
-$shadow-md: 0 2px 6px rgba(0,0,0,0.1);
-$shadow-lg: 0 4px 12px rgba(0,0,0,0.15);
+$shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+$shadow-md: 0 2px 6px rgba(0, 0, 0, 0.1);
+$shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.15);
 
 // Breakpoints
 $breakpoint-xs: 0;
@@ -79,4 +82,3 @@ $breakpoint-sm: 576px;
 $breakpoint-md: 768px;
 $breakpoint-lg: 992px;
 $breakpoint-xl: 1200px;
-

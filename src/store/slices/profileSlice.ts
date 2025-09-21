@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import {api} from "../../api/api.ts";
+import { api } from "../../api/api.ts";
 import type { RootState } from "../store";
-import type {Profile} from "../../shared/types/types.ts";
+import type { Profile } from "../../shared/types/types.ts";
 
 interface profileState {
     profile: Profile | null;
@@ -45,7 +45,7 @@ export const profileSlice = createSlice({
             state.error = null;
         },
         clearProfile: (state) => {
-          state.profile = null;
+            state.profile = null;
         },
     },
     extraReducers: (builder) => {

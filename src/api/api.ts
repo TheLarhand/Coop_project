@@ -1,11 +1,8 @@
 import axios from "axios";
-import type {Credentials, Profile, User} from "../shared/types/types.ts";
+import type { Credentials, Profile, User, UserStatistic, MyStatistic } from "../shared/types/types";
 
 const API_URL = "http://localhost:8000";
-
-const axios_api = axios.create({
-    baseURL: API_URL
-});
+const axios_api = axios.create({ baseURL: API_URL });
 
 export const usersApi = {
     getUsers: async (creds?: Credentials): Promise<User[]> => {
@@ -14,7 +11,7 @@ export const usersApi = {
         });
         return res.data;
     },
-}
+};
 
 export const profileApi = {
     getProfile: async (creds?: Credentials): Promise<Profile> => {
@@ -23,16 +20,34 @@ export const profileApi = {
         });
         return res.data;
     },
-}
+};
+
+// ↓↓↓ НОВОЕ - добавил блок statisticsApi и экспорт его из api
+export const statisticsApi = {
+    // глобальная статистика — без авторизации
+    getGlobal: async (): Promise<UserStatistic[]> => {
+        const res = await axios_api.get<UserStatistic[]>("/task-api/globalStatistic");
+        return res.data;
+    },
+    // моя статистика — требует Basic Auth
+    getMy: async (creds?: Credentials): Promise<MyStatistic> => {
+        const res = await axios_api.get<MyStatistic>("/task-api/myStatistic", {
+            auth: creds ? { username: creds.username, password: creds.password } : undefined,
+        });
+        return res.data;
+    },
+};
+// ↑↑↑ НОВОЕ - добавил блок statisticsApi и экспорт его из api
 
 export const checkAuth = async (creds: Credentials): Promise<void> => {
     await axios_api.get("/task-api/myProfile", {
         auth: { username: creds.username, password: creds.password },
     });
-}
+};
 
 export const api = {
     usersApi,
     profileApi,
-    checkAuth
-}
+    statisticsApi,  // <— Мой экспорт
+    checkAuth,
+};

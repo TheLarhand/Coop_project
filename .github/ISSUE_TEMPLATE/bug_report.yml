@@ -1,0 +1,36 @@
+name: Bug report
+description: Сообщить об ошибке
+labels: [bug]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Описание
+      description: Что происходит не так? Что ожидалось?
+      placeholder: Кратко и чётко
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Шаги для воспроизведения
+      description: Нумерованный список
+      placeholder: |
+        1. ...
+        2. ...
+        3. ...
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: ОС
+      multiple: false
+      options:
+        - Windows
+        - Linux
+        - macOS
+  - type: textarea
+    id: extra
+    attributes:
+      label: Дополнительно

@@ -14,16 +14,25 @@ export const usersApi = {
 };
 
 export const profileApi = {
-    getProfile: async (creds?: Credentials): Promise<Profile> => {
+    getProfile: async (creds: Credentials): Promise<Profile> => {
         const res = await axios_api.get<Profile>("/task-api/myProfile", {
             auth: creds ? { username: creds.username, password: creds.password } : undefined,
         });
         return res.data;
     },
 
-    updateProfile: async (creds?: Credentials): Promise<Profile> => {
+    updateProfile: async (creds?: Credentials, newProfile?: Partial<Profile>): Promise<Profile> => {
+        if (!newProfile) {
+            const error: any = new Error("Новые данные для профиля не были переданы");
+            error.response = {
+                data: { detail: "Новые данные для профиля не были переданы" },
+                status: 400
+            };
+            throw error;
+        }
         const res = await axios_api.put<Profile>("/task-api/updateUser", {
             auth: creds ? { username: creds.username, password: creds.password } : undefined,
+            newProfile
         });
         return res.data;
     }

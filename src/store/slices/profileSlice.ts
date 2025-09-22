@@ -22,7 +22,7 @@ export const fetchProfile = createAsyncThunk<
 >("profile/fetchProfile", async (_, { getState, rejectWithValue }) => {
     const { username, password, isAuthenticated } = getState().auth;
     try {
-        const data = await api.profileApi.getProfile(
+        const data: Profile = await api.profileApi.getProfile(
             isAuthenticated ? { username, password } : undefined
         );
         return data;
@@ -39,13 +39,14 @@ export const fetchProfile = createAsyncThunk<
 
 export const updateProfile = createAsyncThunk<
     Profile,
-    void,
+    Profile,
     { state: RootState; rejectValue: string }
->("profile/updateProfile", async (_, { getState, rejectWithValue }) => {
+>("profile/updateProfile", async (newProfile: Profile, { getState, rejectWithValue }) => {
     const { username, password, isAuthenticated } = getState().auth;
     try {
-        const data = await api.profileApi.updateProfile(
-            isAuthenticated ? { username, password } : undefined
+        const data: Profile = await api.profileApi.updateProfile(
+            isAuthenticated ? { username, password } : undefined,
+            newProfile
         );
         return data;
     } catch (error: any) {

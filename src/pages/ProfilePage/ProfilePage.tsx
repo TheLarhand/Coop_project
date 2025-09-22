@@ -8,6 +8,7 @@ import {
     clearProfile,
     fetchProfile,
     selectProfile,
+    updateProfile,
     selectProfileError,
     selectProfileLoading
 } from "../../store/slices/profileSlice.ts";
@@ -62,6 +63,15 @@ const ProfilePage: React.FC = () => {
     const handleLogOut = () => {
         dispatch(logOut());
         dispatch(clearProfile());
+    }
+
+    const handleUpdateProfile = async (name: string, ava: string) => {
+        if (!didAuth) return;
+        try {
+            await dispatch(updateProfile({ name, ava })).unwrap();
+        } catch (error: any) {
+            console.error(error);
+        }
     }
 
     return (

@@ -1,29 +1,57 @@
-@use '../../../styles/abstracts/variables' as *;
+@use "../../../styles/abstracts/variables" as *;
 
 .wrapper {
-  color: $text-color-inverse;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: $space-sm $space-md;
+  font-size: $font-size-md;
+  border: none;
+  border-radius: $radius-md;
+  cursor: pointer;
+  transition: transform 0.1s ease, background-color 0.2s ease, filter 0.2s ease;
 
   &:disabled {
-    opacity: 0.6;
     cursor: not-allowed;
+    background-color: $disabled-color;
+    opacity: 0.5;
     transform: none;
-    box-shadow: none;
+  }
 
-    &:hover {
-      transform: none;
-      box-shadow: none;
-    }
+  &:hover:not(:disabled) {
+    filter: brightness(1.15);
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+
+  &:focus-visible {
+    outline: 2px solid $border-color;
+    outline-offset: 2px;
   }
 }
 
 .primary {
   background-color: $primary-color;
+  color: $text-color-inverse;
+  border-color: $primary-color;
 }
 
 .secondary {
   background-color: $secondary-color;
+  color: $text-color-inverse;
+  border-color: $secondary-color;
+}
+
+.success {
+  background-color: $success-color;
+  color: $text-color-inverse;
+  border-color: $success-color;
 }
 
 .danger {
   background-color: $danger-color;
+  color: $text-color-inverse;
+  border-color: $danger-color;
 }

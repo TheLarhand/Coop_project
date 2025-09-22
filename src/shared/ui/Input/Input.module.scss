@@ -1,0 +1,41 @@
+@use "../../../styles/abstracts/variables" as *;
+
+.input {
+  width: 100%;
+  padding: $space-xs $space-sm;
+  font-size: $font-size-md;
+  border: 2px solid $border-color;
+  border-radius: $radius-sm;
+  background-color: $bg-color;
+  color: $text-color;
+  transition: border-color 0.2s ease;
+
+  &::placeholder {
+    color: $text-color-light;
+  }
+
+  &:hover:not(:disabled) {
+    border-color: $border-color;
+  }
+
+  &:focus:not(:disabled) {
+    border-color: $primary-color;
+    outline: none;
+  }
+}
+
+.disabled {
+  background-color: $color-grey-1;
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.error {
+  border-color: $danger-color;
+  color: $danger-color;
+}
+
+.success {
+  border-color: $success-color;
+  color: $success-color;
+}

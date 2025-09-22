@@ -1,0 +1,122 @@
+@use "../../../styles/abstracts/variables" as *;
+
+.wrapper {
+  position: relative;
+  width: 250px;
+}
+
+.control {
+  width: 100%;
+  padding: $space-xs $space-sm;
+  border: 1px solid $border-color;
+  border-radius: $radius-sm;
+  background: $primary-color;
+  color: $text-color-inverse;
+  font-size: $font-size-md;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center; 
+}
+
+.arrow {
+  display: inline-block;
+  margin-left: 8px;
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid $text-color-inverse;
+}
+
+.dropdown {
+  padding: $space-xs;
+  position: absolute;
+  font-size: $font-size-sm;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  margin-top: 4px;
+  border-radius: $radius-sm;
+  background: $color-grey-1;
+  z-index: 1000;
+  max-height: 220px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: $shadow-md;
+
+  .search {
+    position: sticky;
+    top: 0;
+    background: $bg-color;
+    padding: $space-xs $space-sm;
+    border: 1px solid $primary-color;
+    z-index: 1;
+    margin: 0;
+    font-size: $font-size-sm;
+    margin-bottom: $space-xs;
+  }
+
+  .list {
+    text-align: left;
+    flex: 1;
+    overflow-y: auto;
+
+    scrollbar-width: thin;
+    scrollbar-color: $border-color transparent;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: $border-color;
+      border-radius: 3px;
+    }
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+  }
+}
+
+.option {
+  padding: $space-xs $space-xs;
+  cursor: pointer;
+
+  &:hover {
+    background: $primary-color;
+    color: $text-color-inverse;
+  }
+
+  &.selected {
+    background: $primary-color;
+    color: $text-color-inverse;
+  }
+}
+
+.search {
+  width: 95%;
+  margin: $space-xs auto;
+  padding: $space-xs $space-sm;
+  border: 1px solid $primary-color;
+  border-radius: $radius-sm;
+  font-size: $font-size-md;
+  outline: none;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.noResults {
+  padding: $space-sm $space-md;
+  color: $text-color-light;
+  font-size: $font-size-sm;
+}
+
+.disabled {
+  background-color: $color-grey-4;
+  cursor: not-allowed;
+  opacity: 0.4;
+}

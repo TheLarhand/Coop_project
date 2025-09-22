@@ -40,14 +40,9 @@ $secondary-color: $color-dark-1;
 $success-color: $color-green-1;
 $danger-color: $color-red-1;
 
-$primary-hover-color: color.adjust($primary-color, $lightness: -7%);
-$secondary-hover-color: color.adjust($secondary-color, $lightness: -7%);
-$success-hover-color: color.adjust($success-color, $lightness: -7%);
-$danger-hover-color: color.adjust($danger-color, $lightness: -7%);
-
 $bg-color: $color-white;
-$border-color: $color-grey-3;
-$disabled-color: $color-grey-4;
+$border-color: $color-grey-2;
+$disabled-color: $color-grey-2;
 
 // Текст 
 $text-color: $color-dark-2;

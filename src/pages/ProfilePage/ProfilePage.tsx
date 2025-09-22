@@ -1,5 +1,5 @@
 import MainLayout from '../../layouts/MainLayout.tsx'
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch } from "../../store/store.ts";
 import {login, logOut, selectIsAuthenticated, selectUsername} from "../../store/slices/authSlice.ts";
@@ -16,6 +16,8 @@ import ProfileModal from "../../shared/ui/ProfileModal/ProfileModal.tsx";
 import Button from "../../shared/ui/Button/Button.tsx";
 import Input from "../../shared/ui/Input/Input.tsx";
 import Textarea from "../../shared/ui/Textarea/Textarea.tsx";
+import {fetchMyStatistic, selectStatistics} from "../../store/slices/statisticsSlice.ts";
+import UserStatCard from "../../features/dashboard/UserStatCard/UserStatCard.tsx";
 
 const ProfilePage: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -24,6 +26,7 @@ const ProfilePage: React.FC = () => {
     const loading = useSelector(selectProfileLoading);
     const error = useSelector(selectProfileError);
     const authedUsername = useSelector(selectUsername);
+    const { my } = useSelector(selectStatistics);
 
     const [userName, setUserName] = useState<string>('');
     const [password, setPassword] = useState<string>('');
@@ -32,6 +35,12 @@ const ProfilePage: React.FC = () => {
     const [modalOpen, setModalOpen] = useState<boolean>(false);
     const [modalError, setModalError] = useState<string | null>(null);
     const [isEditing, setIsEditing] = useState<boolean>(false);
+
+    useEffect(() => {
+        (async () => {
+            if (didAuth) await dispatch(fetchMyStatistic());
+        })()
+    }, [dispatch, didAuth]);
 
     const toggleModal = (editing: boolean = false) => {
         setModalOpen(!modalOpen);
@@ -177,6 +186,20 @@ const ProfilePage: React.FC = () => {
                 <div className={s.userContainer}>
                     <img className={s.userAvatar} src={profile.ava} alt={"user_image"} />
                     <span className={s.userName}>Имя: {profile.name}</span>
+                    {my && (
+                        <div className={s.userStat}>
+                            <UserStatCard
+                                id={0}
+                                name={userName}
+                                ava={profile.ava}
+                                completed={my!.completedTasks}
+                                inWork={my!.inWorkTasks}
+                                failed={my!.failedTasks}
+                                highlight={false}
+                                total={my!.completedTasks + my!.inWorkTasks + my!.failedTasks}
+                            />
+                        </div>
+                    )}
                 </div>
             )}
         </MainLayout>

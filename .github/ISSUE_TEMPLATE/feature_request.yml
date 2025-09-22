@@ -1,0 +1,27 @@
+name: Feature request
+description: Предложить улучшение или новую фичу
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Какая проблема решается?
+      placeholder: "Какой кейс/боль у пользователя?"
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Предлагаемое решение
+      placeholder: "Опиши поведение/механику"
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Альтернативы
+      placeholder: "Что рассматривалось ещё?"
+  - type: textarea
+    id: context
+    attributes:
+      label: Дополнительно (макеты, ссылки, скрины)

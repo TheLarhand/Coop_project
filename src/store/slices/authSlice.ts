@@ -1,4 +1,4 @@
-import {createAsyncThunk, createSlice, type PayloadAction} from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { Credentials } from "../../shared/types/types";
 import { api } from "../../api/api.ts";
 import type { RootState } from "../store";
@@ -23,19 +23,19 @@ export const login = createAsyncThunk<
     { username: string; password: string },
     Credentials,
     { rejectValue: string }
-    >
+>
     ("auth/login", async (creds, { rejectWithValue }) => {
-    try {
-        await api.checkAuth(creds);
-        return creds;
-    } catch (err: any) {
-        const status = err?.response?.status;
-        if (status === 401) {
-            return rejectWithValue("Неверный логин или пароль");
+        try {
+            await api.checkAuth(creds);
+            return creds;
+        } catch (err: any) {
+            const status = err?.response?.status;
+            if (status === 401) {
+                return rejectWithValue("Неверный логин или пароль");
+            }
+            return rejectWithValue("Ошибка подключения к API");
         }
-        return rejectWithValue("Ошибка подключения к API");
-    }
-});
+    });
 
 export const authSlice = createSlice({
     name: "auth",

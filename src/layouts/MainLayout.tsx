@@ -9,10 +9,10 @@ interface Props {
 
 function MainLayout({ children }: Props) {
   return (
-      <div className={s.layout}>
-        <Header/>
-        <div className={s.content}>{children}</div>
-        <Footer/>
+    <div className={s.layout}>
+      <Header />
+      <div className={s.content}>{children}</div>
+      <Footer />
     </div>
   );
 }

@@ -13,3 +13,19 @@ export interface Profile {
     name: string;
     ava: string;
 }
+
+/* ДОБАВИЛОСЬ: */
+export interface UserStatistic {
+    id: number;
+    name: string;
+    ava: string;
+    completedTasks: number;
+    inWorkTasks: number;
+    failedTasks: number;
+}
+
+export interface MyStatistic {
+    completedTasks: number;
+    inWorkTasks: number;
+    failedTasks: number;
+}

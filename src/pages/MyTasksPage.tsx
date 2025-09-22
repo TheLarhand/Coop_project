@@ -3,7 +3,7 @@ import MainLayout from '../layouts/MainLayout'
 function MyTasksPage() {
   return (
     <MainLayout>
-        MyTasksPage
+      MyTasksPage
     </MainLayout>
   )
 }

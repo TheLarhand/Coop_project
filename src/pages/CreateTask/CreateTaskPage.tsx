@@ -50,12 +50,12 @@ function CreateTaskPage() {
         <div className={s.card}>
           <h1 className={s.heading}>Добавить новую задачу</h1>
           <p className={s.subheading}>Заполните все поля, чтобы создать задачу для вашей команды</p>
-{/* Форма для назначения задачи  */}
-          <form action="submit" className={s.form} onSubmit={heandleAddTask}> 
+          {/* Форма для назначения задачи  */}
+          <form action="submit" className={s.form} onSubmit={heandleAddTask}>
 
-            <div className={s.formGroup}> 
+            <div className={s.formGroup}>
               <label htmlFor="taskName">Название задачи</label>
-              <input type="text" id="taskName" required className={s.input} value={taskName} onChange={(e) => setTaskName(e.target.value)}/> {/* Название для задачи */}
+              <input type="text" id="taskName" required className={s.input} value={taskName} onChange={(e) => setTaskName(e.target.value)} /> {/* Название для задачи */}
             </div>
 
             <div className={s.formGroup}>
@@ -75,11 +75,11 @@ function CreateTaskPage() {
 
             <div className={s.formGroup}>
               <label htmlFor="deadline" className={s.lable}>Дедлайн</label> {/* Установка дедлайна задачи */}
-              <input type="date" id='deadline' required className={s.input} value={deadline} onChange={(e) => setDeadline(e.target.value)}/>
+              <input type="date" id='deadline' required className={s.input} value={deadline} onChange={(e) => setDeadline(e.target.value)} />
             </div>
 
             <div className={s.buttonContainer}>
-                <button type='submit' className={s.button} >Добавить задачу</button> {/* Кнопка добавления задачи */}
+              <button type='submit' className={s.button} >Добавить задачу</button> {/* Кнопка добавления задачи */}
             </div>
 
           </form>

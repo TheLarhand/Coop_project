@@ -1,0 +1,26 @@
+@use "../../../styles/abstracts/variables" as *;
+
+.root {
+    width: 100%;
+    height: 10px;
+    border-radius: $radius-md;
+    overflow: hidden;
+    background: #eef2f4;
+    display: flex;
+}
+
+.completed {
+    background: #22c55e;
+}
+
+// зелёный
+.inWork {
+    background: #f59e0b;
+}
+
+// жёлтый
+.failed {
+    background: #ef4444;
+}
+
+// красный

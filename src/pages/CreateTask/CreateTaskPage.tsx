@@ -1,92 +1,141 @@
-import { useState, type FormEvent } from 'react';
+import Button from "../../shared/ui/Button/Button";
+import Input from "../../shared/ui/Input/Input";
+import Textarea from "../../shared/ui/Textarea/Textarea";
+import { useEffect, useState, type FormEvent } from 'react';
 import MainLayout from '../../layouts/MainLayout'
 import s from './CreateTask.module.scss'
-function CreateTaskPage() {
+import { fetchUsers, selectAllUsers, selectUsersLoading, selectUsersError } from '../../store/slices/usersSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import type { User } from '../../shared/types/types';
+import type { AppDispatch } from '../../store/store';
+import { fetchProfile, selectProfile  } from "../../store/slices/profileSlice";
+import Select from "../../shared/ui/Select/Select";
 
-  interface Assignee {
-    id: string;
-    name: string;
-  }
 
-  interface Task {
+ interface Task {
+    id: string
     name: string;
     description: string;
     assigneeId: string;
     deadline: string;
+    creator: string
   }
 
-  const assignees: Assignee[] = [
-    { id: '1', name: 'Анна' },
-    { id: '2', name: 'Борис' },
-    { id: '3', name: 'Виктор' },
-    { id: '4', name: 'Галина' },
-  ];
+function CreateTaskPage() {
+
+  const users = useSelector(selectAllUsers);
+  const profile = useSelector(selectProfile)
+  const isLoading = useSelector(selectUsersLoading);
+  const error = useSelector(selectUsersError);
 
   const [taskName, setTaskName] = useState('')
   const [taskDiscription, setTaskDiscription] = useState('')
   const [selectedAssignee, setSelectedAssignee] = useState('');
   const [deadline, setDeadline] = useState('');
 
-  const heandleAddTask = (e: FormEvent) => {
-    e.preventDefault()
+  const dispatch = useDispatch<AppDispatch>();
+
+  useEffect(() => {
+    dispatch(fetchUsers());
+    dispatch(fetchProfile());
+  }, [dispatch]);
+
+  const assigneeOptions = users.map(user => ({
+    label: user.name,
+    value: user.name,
+  }));
+
+   const generateUniqueId = (): string => {
+    return Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
+  };
+
+  const handleAddTask = (e: FormEvent) => {
+    e.preventDefault();
+
+    if (!profile || !profile.name) {
+        console.error("Профиль пользователя не загружен. Невозможно создать задачу.");
+        return;
+    }
 
     const newTask: Task = {
+      id: generateUniqueId(),
       name: taskName,
       description: taskDiscription,
       assigneeId: selectedAssignee,
       deadline: deadline,
-    }
+      creator: profile.name
+    };
 
-    console.log('New task: ', newTask)
+    console.log('New task:', newTask);
 
-    setTaskName('')
-    setTaskDiscription('')
-    setSelectedAssignee('')
-    setDeadline('')
+    setTaskName('');
+    setTaskDiscription('');
+    setSelectedAssignee('');
+    setDeadline('');
+  };
+
+  const clearBtn = () => {
+    setTaskName('');
+    setTaskDiscription('');
+    setSelectedAssignee('');
+    setDeadline('');
   }
+  
   return (
     <MainLayout>
       <div className={s.container}>
         <div className={s.card}>
           <h1 className={s.heading}>Добавить новую задачу</h1>
           <p className={s.subheading}>Заполните все поля, чтобы создать задачу для вашей команды</p>
-          {/* Форма для назначения задачи  */}
-          <form action="submit" className={s.form} onSubmit={heandleAddTask}>
+          <form className={s.form} onSubmit={handleAddTask}>
 
             <div className={s.formGroup}>
               <label htmlFor="taskName">Название задачи</label>
-              <input type="text" id="taskName" required className={s.input} value={taskName} onChange={(e) => setTaskName(e.target.value)} /> {/* Название для задачи */}
+              <Input type="text" required 
+                placeholder=""
+                value={taskName} 
+                onChange={(e) => setTaskName(e.target.value)}></Input>
             </div>
 
             <div className={s.formGroup}>
               <label htmlFor="taskDescription" className={s.lable}>Описание задачи</label>
-              <textarea id="taskDescription" required className={`${s.input} ${s.textarea}`} value={taskDiscription} onChange={(e) => setTaskDiscription(e.target.value)}></textarea> {/* Описание для задачи */}
+              <Textarea
+                required
+                value={taskDiscription} 
+                onChange={(e) => setTaskDiscription(e.target.value)}
+              ></Textarea>
             </div>
 
             <div className={s.formGroup}>
               <label htmlFor="assignee" className={s.lable}>Исполнитель</label>
-              <select id="assignee" required className={`${s.input} ${s.select}`} value={selectedAssignee} onChange={(e) => setSelectedAssignee(e.target.value)}> {/* Селектор для выбра исполнителя задачи */}
-                <option value="" disabled>Выберите исполнителя</option>
-                {assignees.map(assignee => (
-                  <option key={assignee.id} value={assignee.name}>{assignee.name}</option>
-                ))}
-              </select>
+              <Select
+                value={selectedAssignee}
+                onChange={setSelectedAssignee}
+                options={assigneeOptions}
+                placeholder={isLoading ? 'Загрузка пользователей...' : 'Выберите исполнителя'}
+                disabled={isLoading || !!error}
+                className={s.input}
+              />
             </div>
 
             <div className={s.formGroup}>
-              <label htmlFor="deadline" className={s.lable}>Дедлайн</label> {/* Установка дедлайна задачи */}
-              <input type="date" id='deadline' required className={s.input} value={deadline} onChange={(e) => setDeadline(e.target.value)} />
+              <label htmlFor="deadline" className={s.lable}>Дедлайн</label>
+              <Input type="date" required 
+                placeholder=""
+                value={deadline} 
+                onChange={(e) => setDeadline(e.target.value)}></Input>
             </div>
 
             <div className={s.buttonContainer}>
-              <button type='submit' className={s.button} >Добавить задачу</button> {/* Кнопка добавления задачи */}
+              <Button type="submit" variant="primary">Добавить задачу</Button>
+              <Button type="button" onClick={clearBtn} variant="primary">Очистить поля</Button>
             </div>
 
           </form>
         </div>
       </div>
     </MainLayout>
-  )
+  );
 }
 
 export default CreateTaskPage

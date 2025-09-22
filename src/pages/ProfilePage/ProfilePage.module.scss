@@ -9,11 +9,18 @@
 .userAvatar {
   width: 128px;
   height: 128px;
+  border-radius: 50%;
+  object-fit: cover;
+  image-rendering: auto;
 }
 
 .userName {
   font-size: 20px;
   font-weight: 500;
+}
+
+.userStat {
+  margin-top: 50px;
 }
 
 .buttonsContainer {
@@ -32,5 +39,24 @@
     &:hover {
       cursor: pointer;
     }
+  }
+}
+
+.avatarPreview {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 0 12px;
+
+  &__img {
+    width: 128px;
+    height: 128px;
+    border-radius: 50%;
+    object-fit: cover;
+    image-rendering: auto;
+  }
+
+  &__hint {
+    opacity: 0.7;
   }
 }

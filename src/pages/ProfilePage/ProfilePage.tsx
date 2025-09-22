@@ -13,6 +13,9 @@ import {
     selectProfileLoading
 } from "../../store/slices/profileSlice.ts";
 import ProfileModal from "../../shared/ui/ProfileModal/ProfileModal.tsx";
+import Button from "../../shared/ui/Button/Button.tsx";
+import Input from "../../shared/ui/Input/Input.tsx";
+import Textarea from "../../shared/ui/Textarea/Textarea.tsx";
 
 const ProfilePage: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -107,21 +110,19 @@ const ProfilePage: React.FC = () => {
                     render={() => (
                         <>
                             <h2 className={s.formContainer__form__title}>{ didAuth ? 'Change Account Form' : 'Auth Form' }</h2>
-                            <input
+                            <Input
                                 placeholder="username"
                                 type="text"
                                 value={userName}
-                                required
                                 onChange={(e) => setUserName(e.target.value)}
                             />
-                            <input
+                            <Input
                                 placeholder="password"
                                 type="password"
                                 value={password}
-                                required
                                 onChange={(e) => setPassword(e.target.value)}
                             />
-                            <button type="submit">{ didAuth ? 'Change Account' : 'Auth' }</button>
+                            <Button type={"submit"}>{ didAuth ? 'Change Account' : 'Auth' }</Button>
                         </>
                     )}
                 />
@@ -135,20 +136,18 @@ const ProfilePage: React.FC = () => {
                     render={() => (
                         <>
                             <h2 className={s.formContainer__form__title}>Update Profile form</h2>
-                            <input
+                            <Input
                                 placeholder="name"
                                 type="text"
                                 value={userName}
-                                required
                                 onChange={(e) => setUserName(e.target.value)}
                             />
-                            <textarea
+                            <Textarea
                                 placeholder="ava"
                                 value={ava}
-                                required
                                 onChange={(e) => setAva(e.target.value)}
                             />
-                            <button type="submit">Update Profile</button>
+                            <Button type={"submit"}>Update Profile</Button>
                         </>
                     )}
                 />
@@ -156,14 +155,14 @@ const ProfilePage: React.FC = () => {
 
             {didAuth && (
                 <div className={s.buttonsContainer}>
-                    <button type="button" onClick={() => toggleModal()}>Change profile</button>
-                    <button type="button" onClick={() => toggleModal(true)}>Update profile</button>
-                    <button type="button" onClick={handleLogOut}>Log Out</button>
+                    <Button type={"button"} onClick={() => toggleModal()}>Change profile</Button>
+                    <Button type={"button"} onClick={() => toggleModal(true)}>Update profile</Button>
+                    <Button type={"button"} onClick={handleLogOut}>Log Out</Button>
                 </div>
             )}
 
             {!didAuth && (
-                <button type="button" onClick={() => toggleModal()}>Auth</button>
+                <Button type={"button"} onClick={() => toggleModal()}>Auth</Button>
             )}
 
             {error && (

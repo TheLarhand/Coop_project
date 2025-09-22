@@ -1,11 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+@use '../../styles/abstracts/variables' as *;
 
 body {
     font-family: 'Inter', sans-serif;
 }
 
 .container {
-    background-color: #f9fafb;
     min-height: 100vh;
     display: flex;
     align-items: center;
@@ -14,33 +13,27 @@ body {
 }
 
 .card {
-    background-color: #fff;
-    padding: 2rem;
-    border-radius: 1rem;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    background-color: $bg-color;
+    padding: $space-lg;
+    border-radius: $radius-lg;
+    border: 1px solid $primary-color;
     width: 100%;
     max-width: 48rem;
-    transform: scale(1);
-    transition-property: transform, box-shadow;
-    transition-duration: 300ms;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    
 }
 
-.card:hover {
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-}
 
 .heading {
     font-size: 1.875rem;
     font-weight: 700;
-    color: #111827;
+    color: $text-color;
     margin-bottom: 1.5rem;
     text-align: center;
 }
 
 .subheading {
     text-align: center;
-    color: #6b7280;
+    color: $text-color-light;
     margin-bottom: 2rem;
 }
 
@@ -60,21 +53,7 @@ body {
     display: block;
     font-size: 0.875rem;
     font-weight: 500;
-    color: #374151;
-}
-
-.input,
-.select,
-.textarea {
-    display: block;
-    width: 100%;
-    padding: 0.5rem 1rem;
-    border: 1px solid #d1d5db;
-    border-radius: 0.375rem;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    transition-property: border-color, box-shadow;
-    transition-duration: 200ms;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    color: $text-color;
 }
 
 
@@ -84,35 +63,7 @@ body {
 
 .buttonContainer {
     padding-top: 0.5rem;
+    gap: $space-xs;
     display: flex;
     justify-content: center;
-}
-
-.button {
-    width: 100%;
-    padding: 0.75rem 1.5rem;
-    border: 1px solid transparent;
-    font-size: 1rem;
-    font-weight: 500;
-    border-radius: 0.375rem;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    color: #fff;
-    background-color: #4f46e5;
-    transition-property: background-color, transform;
-    transition-duration: 300ms;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.button:hover {
-    background-color: #4338ca;
-}
-
-.button:focus {
-    outline: 2px solid transparent;
-    outline-offset: 2px;
-    box-shadow: 0 0 0 2px #fff, 0 0 0 4px #4f46e5, 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-}
-
-.button:active {
-    transform: scale(0.95);
 }

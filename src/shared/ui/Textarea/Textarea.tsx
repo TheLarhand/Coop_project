@@ -8,9 +8,10 @@ interface TextareaProps {
   error?: boolean
   success?: boolean
   className?: string
+  required: boolean
 }
 
-function Textarea({ value, onChange, placeholder, disabled, error, success, className }: TextareaProps) {
+function Textarea({ value, onChange, placeholder, disabled, error, success, className, required }: TextareaProps) {
   return (
     <textarea
       className={`
@@ -24,6 +25,7 @@ function Textarea({ value, onChange, placeholder, disabled, error, success, clas
       onChange={onChange}
       placeholder={placeholder}
       disabled={disabled}
+      required={required}
     />
   )
 }

@@ -3,7 +3,7 @@ import s from "./Select.module.scss"
 
 interface Option {
   label: string
-  value: string
+  value: string 
 }
 
 interface SelectProps {

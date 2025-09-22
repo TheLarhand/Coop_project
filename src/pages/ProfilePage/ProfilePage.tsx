@@ -16,29 +16,40 @@ import ProfileModal from "../../shared/ui/ProfileModal/ProfileModal.tsx";
 
 const ProfilePage: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
-    const didAuth = useSelector(selectIsAuthenticated)
-
-    const [userName, setUserName] = useState<string>('');
-    const [password, setPassword] = useState<string>('');
-
-    const [modalOpen, setModalOpen] = useState<boolean>(false)
-    const [modalError, setModalError] = useState<string | null>(null)
-
+    const didAuth = useSelector(selectIsAuthenticated);
     const profile = useSelector(selectProfile);
     const loading = useSelector(selectProfileLoading);
     const error = useSelector(selectProfileError);
     const authedUsername = useSelector(selectUsername);
 
-    const toggleModal = () => {
-        setModalOpen(!modalOpen)
-        if (didAuth) setUserName(authedUsername)
+    const [userName, setUserName] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
+    const [ava, setAva] = useState<string>('');
+
+    const [modalOpen, setModalOpen] = useState<boolean>(false);
+    const [modalError, setModalError] = useState<string | null>(null);
+    const [isEditing, setIsEditing] = useState<boolean>(false);
+
+    const toggleModal = (editing: boolean = false) => {
+        setModalOpen(!modalOpen);
+        if (editing) {
+            setIsEditing(true);
+            setUserName(profile!.name);
+            setAva(profile!.ava);
+        }
+        if (didAuth && !editing) {
+            setIsEditing(false);
+            setUserName(authedUsername);
+            setAva('');
+        }
     }
 
     const clearModal = () => {
-        setUserName('')
-        setPassword('')
-        setModalError('')
-        setModalOpen(false)
+        setUserName('');
+        setPassword('');
+        setModalError('');
+        setModalOpen(false);
+        if (isEditing) setIsEditing(false);
     }
 
     const handleAuth = async (e?: React.FormEvent) => {
@@ -74,10 +85,13 @@ const ProfilePage: React.FC = () => {
         dispatch(clearProfile());
     }
 
-    const handleUpdateProfile = async (name?: string, ava?: string) => {
+    const handleUpdateProfile = async (name?: string, ava?: string, e?: React.FormEvent) => {
+        e?.preventDefault();
         if (!didAuth) return;
         try {
-            await dispatch(updateProfile({ name, ava })).unwrap();
+            await dispatch(updateProfile({ name: name, ava: ava })).unwrap();
+            clearModal()
+            console.log("Profile updated")
         } catch (error: any) {
             console.error(error);
         }
@@ -85,16 +99,17 @@ const ProfilePage: React.FC = () => {
 
     return (
         <MainLayout>
-            {modalOpen && (
+            {modalOpen && !isEditing && (
                 <ProfileModal
-                    onClose={toggleModal}
-                    onSubmit={handleAuth}
+                    onClose={() => toggleModal()}
+                    onSubmit={(e) => handleAuth(e)}
                     modalError={modalError}
                     render={() => (
                         <>
                             <h2 className={s.formContainer__form__title}>{ didAuth ? 'Change Account Form' : 'Auth Form' }</h2>
                             <input
                                 placeholder="username"
+                                type="text"
                                 value={userName}
                                 required
                                 onChange={(e) => setUserName(e.target.value)}
@@ -112,15 +127,43 @@ const ProfilePage: React.FC = () => {
                 />
             )}
 
+            {modalOpen && isEditing && (
+                <ProfileModal
+                    onClose={() => toggleModal()}
+                    onSubmit={(e) => handleUpdateProfile(userName, ava, e)}
+                    modalError={modalError}
+                    render={() => (
+                        <>
+                            <h2 className={s.formContainer__form__title}>Update Profile form</h2>
+                            <input
+                                placeholder="name"
+                                type="text"
+                                value={userName}
+                                required
+                                onChange={(e) => setUserName(e.target.value)}
+                            />
+                            <textarea
+                                placeholder="ava"
+                                value={ava}
+                                required
+                                onChange={(e) => setAva(e.target.value)}
+                            />
+                            <button type="submit">Update Profile</button>
+                        </>
+                    )}
+                />
+            )}
+
             {didAuth && (
                 <div className={s.buttonsContainer}>
-                    <button type="button" onClick={toggleModal}>Change profile</button>
+                    <button type="button" onClick={() => toggleModal()}>Change profile</button>
+                    <button type="button" onClick={() => toggleModal(true)}>Update profile</button>
                     <button type="button" onClick={handleLogOut}>Log Out</button>
                 </div>
             )}
 
             {!didAuth && (
-                <button type="button" onClick={toggleModal}>Auth</button>
+                <button type="button" onClick={() => toggleModal()}>Auth</button>
             )}
 
             {error && (

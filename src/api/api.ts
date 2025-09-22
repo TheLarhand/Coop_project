@@ -30,10 +30,13 @@ export const profileApi = {
             };
             throw error;
         }
-        const res = await axios_api.put<Profile>("/task-api/updateUser", {
-            auth: creds ? { username: creds.username, password: creds.password } : undefined,
-            newProfile
-        });
+        const res = await axios_api.put<Profile>(
+            "/task-api/updateUser",
+            newProfile,
+            {
+                auth: creds ? { username: creds.username, password: creds.password } : undefined,
+            }
+        );
         return res.data;
     }
 };

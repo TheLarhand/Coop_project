@@ -37,6 +37,28 @@ export const fetchProfile = createAsyncThunk<
     }
 });
 
+export const updateProfile = createAsyncThunk<
+    Profile,
+    void,
+    { state: RootState; rejectValue: string }
+>("profile/updateProfile", async (_, { getState, rejectWithValue }) => {
+    const { username, password, isAuthenticated } = getState().auth;
+    try {
+        const data = await api.profileApi.updateProfile(
+            isAuthenticated ? { username, password } : undefined
+        );
+        return data;
+    } catch (error: any) {
+        const status = error?.response?.status;
+        if (status === 401) {
+            return rejectWithValue("Доступ запрещён: войдите в систему");
+        }
+        return rejectWithValue(
+            error?.response?.data?.detail || "Ошибка обновления профиля"
+        );
+    }
+});
+
 export const profileSlice = createSlice({
     name: "profile",
     initialState,
@@ -50,6 +72,7 @@ export const profileSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
+            /* Получение профиля */
             .addCase(fetchProfile.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -60,6 +83,14 @@ export const profileSlice = createSlice({
             })
             .addCase(fetchProfile.rejected, (state, action) => {
                 state.loading = false;
+                state.error = (action.payload as string) ?? "Неизвестная ошибка";
+            })
+
+            /* Обновление профиля */
+            .addCase(updateProfile.fulfilled, (state, action) => {
+                state.profile = action.payload;
+            })
+            .addCase(updateProfile.rejected, (state, action) => {
                 state.error = (action.payload as string) ?? "Неизвестная ошибка";
             });
     },

@@ -20,6 +20,13 @@ export const profileApi = {
         });
         return res.data;
     },
+
+    updateProfile: async (creds?: Credentials): Promise<Profile> => {
+        const res = await axios_api.put<Profile>("/task-api/updateUser", {
+            auth: creds ? { username: creds.username, password: creds.password } : undefined,
+        });
+        return res.data;
+    }
 };
 
 // ↓↓↓ НОВОЕ - добавил блок statisticsApi и экспорт его из api

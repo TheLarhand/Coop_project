@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import type { Credentials } from "../../shared/types/types";
 import { api } from "../../api/api.ts";
 import type { RootState } from "../store";
@@ -20,22 +20,22 @@ const initialState: AuthState = {
 };
 
 export const login = createAsyncThunk<
-    { username: string; password: string },
+    Credentials,
     Credentials,
     { rejectValue: string }
 >
     ("auth/login", async (creds, { rejectWithValue }) => {
-        try {
-            await api.checkAuth(creds);
-            return creds;
-        } catch (err: any) {
-            const status = err?.response?.status;
-            if (status === 401) {
-                return rejectWithValue("Неверный логин или пароль");
-            }
-            return rejectWithValue("Ошибка подключения к API");
+    try {
+        await api.checkAuth(creds);
+        return creds;
+    } catch (err: any) {
+        const status = err?.response?.status;
+        if (status === 401) {
+            return rejectWithValue("Неверный логин или пароль");
         }
-    });
+        return rejectWithValue("Ошибка подключения к API");
+    }
+});
 
 export const authSlice = createSlice({
     name: "auth",
@@ -45,12 +45,6 @@ export const authSlice = createSlice({
             state.username = "";
             state.password = "";
             state.isAuthenticated = false;
-            state.error = null;
-        },
-        setCredentials: (state, action: PayloadAction<Credentials>) => {
-            state.username = action.payload.username;
-            state.password = action.payload.password;
-            state.isAuthenticated = true;
             state.error = null;
         },
     },
@@ -68,14 +62,19 @@ export const authSlice = createSlice({
                 state.error = null;
             })
             .addCase(login.rejected, (state, action) => {
-                state.loading = false;
-                state.isAuthenticated = false;
-                state.error = action.payload ?? "Ошибка авторизации";
+                if (!state.isAuthenticated) {
+                    state.loading = false;
+                    state.isAuthenticated = false;
+                    state.error = action.payload ?? "Ошибка авторизации";
+                } else {
+                    state.loading = false;
+                    state.error = action.payload ?? "Ошибка Смены аккаунта";
+                }
             });
     },
 });
 
-export const { logOut, setCredentials } = authSlice.actions;
+export const { logOut } = authSlice.actions;
 
 export const selectAuth = (state: RootState) => state.auth;
 export const selectUsername = (state: RootState) => state.auth.username;

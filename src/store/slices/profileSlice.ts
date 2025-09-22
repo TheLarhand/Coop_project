@@ -39,9 +39,9 @@ export const fetchProfile = createAsyncThunk<
 
 export const updateProfile = createAsyncThunk<
     Profile,
-    Profile,
+    Partial<Profile>,
     { state: RootState; rejectValue: string }
->("profile/updateProfile", async (newProfile: Profile, { getState, rejectWithValue }) => {
+>("profile/updateProfile", async (newProfile: Partial<Profile>, { getState, rejectWithValue }) => {
     const { username, password, isAuthenticated } = getState().auth;
     try {
         const data: Profile = await api.profileApi.updateProfile(

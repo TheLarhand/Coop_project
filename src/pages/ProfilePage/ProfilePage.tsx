@@ -2,7 +2,7 @@ import MainLayout from '../../layouts/MainLayout.tsx'
 import React, { useState } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch } from "../../store/store.ts";
-import { login, logOut, selectIsAuthenticated } from "../../store/slices/authSlice.ts";
+import {login, logOut, selectIsAuthenticated, selectUsername} from "../../store/slices/authSlice.ts";
 import s from "./ProfilePage.module.scss";
 import {
     clearProfile,
@@ -12,6 +12,7 @@ import {
     selectProfileError,
     selectProfileLoading
 } from "../../store/slices/profileSlice.ts";
+import ProfileModal from "../../shared/ui/ProfileModal/ProfileModal.tsx";
 
 const ProfilePage: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -26,17 +27,11 @@ const ProfilePage: React.FC = () => {
     const profile = useSelector(selectProfile);
     const loading = useSelector(selectProfileLoading);
     const error = useSelector(selectProfileError);
-
-    const handleChangeUsername = (e?: React.ChangeEvent<HTMLInputElement>) => {
-        setUserName(e!.target.value)
-    }
-
-    const handleChangePassword = (e?: React.ChangeEvent<HTMLInputElement>) => {
-        setPassword(e!.target.value)
-    }
+    const authedUsername = useSelector(selectUsername);
 
     const toggleModal = () => {
         setModalOpen(!modalOpen)
+        if (didAuth) setUserName(authedUsername)
     }
 
     const clearModal = () => {
@@ -48,9 +43,23 @@ const ProfilePage: React.FC = () => {
 
     const handleAuth = async (e?: React.FormEvent) => {
         e?.preventDefault();
-        if (didAuth) return;
+        if (didAuth) {
+            if (userName.trim() == authedUsername.trim()) {
+                console.error("Вы уже авторизованы в этом аккаунте");
+                return setModalError("Вы уже авторизованы в этом аккаунте");
+            }
+            try {
+                await dispatch(login({ username: userName.trim(), password: password.trim() })).unwrap();
+                await dispatch(fetchProfile()).unwrap();
+                clearModal()
+                console.log("Account changed!");
+            } catch (error: any) {
+                console.error(error);
+                setModalError(error)
+            }
+        }
         try {
-            await dispatch(login({ username: userName, password: password })).unwrap();
+            await dispatch(login({ username: userName.trim(), password: password.trim() })).unwrap();
             await dispatch(fetchProfile()).unwrap();
             clearModal()
             console.log("Auth!");
@@ -65,7 +74,7 @@ const ProfilePage: React.FC = () => {
         dispatch(clearProfile());
     }
 
-    const handleUpdateProfile = async (name: string, ava: string) => {
+    const handleUpdateProfile = async (name?: string, ava?: string) => {
         if (!didAuth) return;
         try {
             await dispatch(updateProfile({ name, ava })).unwrap();
@@ -76,26 +85,43 @@ const ProfilePage: React.FC = () => {
 
     return (
         <MainLayout>
-            {modalOpen && !didAuth && (
-                <div className={s.modalBackground}>
-                    <div className={s.formContainer}>
-                        <img className={s.formContainer__closeModal} src={"/closeModal.svg"} alt={"closeModal_icon"} onClick={toggleModal} />
-                        <form className={s.formContainer__form} onSubmit={handleAuth}>
-                            <h2 className={s.formContainer__form__title}>Auth Form</h2>
-                            <input placeholder={"username"} value={userName} required={true} onChange={handleChangeUsername}></input>
-                            <input placeholder={"password"} value={password} required={true} onChange={handleChangePassword}></input>
-                            <button type={"submit"}>Auth</button>
-                            {modalError && (
-                                <span className={s.formContainer__error}>{modalError}</span>
-                            )}
-                        </form>
-                    </div>
+            {modalOpen && (
+                <ProfileModal
+                    onClose={toggleModal}
+                    onSubmit={handleAuth}
+                    modalError={modalError}
+                    render={() => (
+                        <>
+                            <h2 className={s.formContainer__form__title}>{ didAuth ? 'Change Account Form' : 'Auth Form' }</h2>
+                            <input
+                                placeholder="username"
+                                value={userName}
+                                required
+                                onChange={(e) => setUserName(e.target.value)}
+                            />
+                            <input
+                                placeholder="password"
+                                type="password"
+                                value={password}
+                                required
+                                onChange={(e) => setPassword(e.target.value)}
+                            />
+                            <button type="submit">{ didAuth ? 'Change Account' : 'Auth' }</button>
+                        </>
+                    )}
+                />
+            )}
+
+            {didAuth && (
+                <div className={s.buttonsContainer}>
+                    <button type="button" onClick={toggleModal}>Change profile</button>
+                    <button type="button" onClick={handleLogOut}>Log Out</button>
                 </div>
             )}
 
-            <button type="button" onClick={didAuth ? handleLogOut : toggleModal}>
-                {didAuth ? 'Log Out' : 'Auth'}
-            </button>
+            {!didAuth && (
+                <button type="button" onClick={toggleModal}>Auth</button>
+            )}
 
             {error && (
                 <div>Произошла ошибка: {error}</div>

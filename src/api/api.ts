@@ -20,6 +20,25 @@ export const profileApi = {
         });
         return res.data;
     },
+
+    updateProfile: async (creds?: Credentials, newProfile?: Partial<Profile>): Promise<Profile> => {
+        if (!newProfile) {
+            const error: any = new Error("Новые данные для профиля не были переданы");
+            error.response = {
+                data: { detail: "Новые данные для профиля не были переданы" },
+                status: 400
+            };
+            throw error;
+        }
+        const res = await axios_api.put<Profile>(
+            "/task-api/updateUser",
+            newProfile,
+            {
+                auth: creds ? { username: creds.username, password: creds.password } : undefined,
+            }
+        );
+        return res.data;
+    }
 };
 
 // ↓↓↓ НОВОЕ - добавил блок statisticsApi и экспорт его из api

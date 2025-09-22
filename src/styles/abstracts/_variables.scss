@@ -37,14 +37,9 @@ $secondary-color: $color-dark-1;
 $success-color:   $color-green-1;
 $danger-color:    $color-red-1;
 
-$primary-hover-color: darken($primary-color, 7%);
-$secondary-hover-color: darken($secondary-color, 7%);
-$success-hover-color: darken($success-color, 7%);
-$danger-hover-color: darken($danger-color, 7%);
-
 $bg-color: $color-white;
-$border-color: $color-grey-3;
-$disabled-color: $color-grey-4;
+$border-color: $color-grey-2;
+$disabled-color: $color-grey-2;
 
 // Текст 
 $text-color: $color-dark-2;

@@ -7,7 +7,7 @@ function Header() {
 
   const navigationItems = [
     { path: '/testPage', label: 'Тестовая страница' },
-    { path: '/', label: 'Статистика' },
+    { path: '/', label: 'Главная (Dashboard/Overview)' }, // Ранее "Статистика"
     { path: '/myTasks', label: 'Мои задачи' },
     { path: '/delegatedTasks', label: 'Делегированные' },
     { path: '/createTask', label: 'Создать задачу' },
@@ -20,7 +20,7 @@ function Header() {
 
   return (
     <header className={s.header}>
-        <div className={s.header__content}>
+      <div className={s.header__content}>
         {navigationItems.map((item) => (
           <Button
             key={item.path}

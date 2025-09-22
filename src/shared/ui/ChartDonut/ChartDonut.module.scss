@@ -1,0 +1,50 @@
+@use '../../../styles/abstracts/variables' as *;
+
+.wrapper {
+    display: flex;
+    align-items: center;
+    gap: $space-md;
+}
+
+.donut {
+    border-radius: 50%;
+    box-shadow: $shadow-sm;
+    --ok: #22c55e;
+    --warn: #f59e0b;
+    --bad: #ef4444;
+}
+
+.legend {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    color: $text-color;
+    font-size: $font-size-md;
+
+    li {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+}
+
+.iOk,
+.iWarn,
+.iBad {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+}
+
+.iOk {
+    background: #22c55e;
+}
+
+.iWarn {
+    background: #f59e0b;
+}
+
+.iBad {
+    background: #ef4444;
+}

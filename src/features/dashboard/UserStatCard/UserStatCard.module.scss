@@ -1,0 +1,45 @@
+@use '../../../styles/abstracts/variables' as *;
+
+.card {
+    background: $bg-color;
+    border: 1px solid $border-color;
+    border-radius: $radius-lg;
+    padding: $space-md;
+    box-shadow: $shadow-sm;
+}
+
+.head {
+    display: flex;
+    align-items: center;
+    gap: $space-sm;
+    margin-bottom: $space-sm;
+}
+
+.ava {
+    border-radius: $radius-md;
+}
+
+.name {
+    color: $text-color;
+    font-size: $font-size-lg;
+}
+
+.list {
+    margin: 0 0 $space-sm 0;
+    padding-left: $space-md;
+
+    li {
+        color: $text-color;
+    }
+}
+
+.meta {
+    color: $text-color-light;
+    font-size: $font-size-sm;
+}
+
+.highlight {
+    outline: 2px solid $primary-color;
+    box-shadow: 0 0 0 4px rgba(26, 188, 156, 0.15);
+    border-radius: $radius-lg;
+}

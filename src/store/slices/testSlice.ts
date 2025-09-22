@@ -25,7 +25,7 @@ export const checkApiStatus = createAsyncThunk(
     try {
       const response = await testApi.checkApiStatus();
       return response.message;
-    } catch (error: any) {        
+    } catch (error: any) {
       return rejectWithValue(
         error.response?.data?.detail || "Ошибка подключения к API"
       );

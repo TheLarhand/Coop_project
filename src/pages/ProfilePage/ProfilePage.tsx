@@ -1,5 +1,5 @@
 import MainLayout from '../../layouts/MainLayout.tsx'
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch } from "../../store/store.ts";
 import {login, logOut, selectIsAuthenticated, selectUsername} from "../../store/slices/authSlice.ts";
@@ -15,9 +15,9 @@ import {
 import ProfileModal from "../../shared/ui/ProfileModal/ProfileModal.tsx";
 import Button from "../../shared/ui/Button/Button.tsx";
 import Input from "../../shared/ui/Input/Input.tsx";
-import Textarea from "../../shared/ui/Textarea/Textarea.tsx";
 import {fetchMyStatistic, selectStatistics} from "../../store/slices/statisticsSlice.ts";
 import UserStatCard from "../../features/dashboard/UserStatCard/UserStatCard.tsx";
+import { fileToAvatarDataURL  } from "./utils/utils";
 
 const ProfilePage: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -31,6 +31,7 @@ const ProfilePage: React.FC = () => {
     const [userName, setUserName] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [ava, setAva] = useState<string>('');
+    const fileRef = useRef<HTMLInputElement | null>(null);
 
     const [modalOpen, setModalOpen] = useState<boolean>(false);
     const [modalError, setModalError] = useState<string | null>(null);
@@ -62,6 +63,7 @@ const ProfilePage: React.FC = () => {
         setModalError('');
         setModalOpen(false);
         if (isEditing) setIsEditing(false);
+        if (fileRef.current) fileRef.current.value = "";
     }
 
     const handleAuth = async (e?: React.FormEvent) => {
@@ -97,11 +99,43 @@ const ProfilePage: React.FC = () => {
         dispatch(clearProfile());
     }
 
+    const onAvatarPick: React.ChangeEventHandler<HTMLInputElement> = async (e) => {
+        setModalError(null);
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        if (!file.type.startsWith("image/")) {
+            setModalError("Пожалуйста, выберите изображение.");
+            if (fileRef.current) fileRef.current.value = "";
+            return;
+        }
+
+        // общий лимит (и для статичных, и для анимированных)
+        if (file.size > 5 * 1024 * 1024) {
+            setModalError("Файл слишком большой (> 5 МБ).");
+            if (fileRef.current) fileRef.current.value = "";
+            return;
+        }
+
+        try {
+            const { dataURL } = await fileToAvatarDataURL(file, {
+                maxSide: 256,
+                mime: "image/webp",
+                quality: 0.90,
+                maxBytesAnimated: 5 * 1024 * 1024,
+            });
+            setAva(dataURL);
+        } catch (err: any) {
+            setModalError(err?.message ?? "Не удалось обработать изображение");
+            if (fileRef.current) fileRef.current.value = "";
+        }
+    };
+
     const handleUpdateProfile = async (name?: string, ava?: string, e?: React.FormEvent) => {
         e?.preventDefault();
         if (!didAuth) return;
         try {
-            await dispatch(updateProfile({ name: name, ava: ava })).unwrap();
+            await dispatch(updateProfile({ name: name?.trim(), ava: ava })).unwrap();
             clearModal()
             console.log("Profile updated")
         } catch (error: any) {
@@ -145,16 +179,29 @@ const ProfilePage: React.FC = () => {
                     render={() => (
                         <>
                             <h2 className={s.formContainer__form__title}>Update Profile form</h2>
+
+                            {(ava || profile?.ava) && (
+                                <div className={s.avatarPreview}>
+                                    <img
+                                        className={s.avatarPreview__img}
+                                        src={ava || profile!.ava}
+                                        alt="avatar preview"
+                                    />
+                                    {ava && <small className={s.avatarPreview__hint}>Предпросмотр (ещё не сохранено)</small>}
+                                </div>
+                            )}
+
                             <Input
                                 placeholder="name"
                                 type="text"
                                 value={userName}
                                 onChange={(e) => setUserName(e.target.value)}
                             />
-                            <Textarea
-                                placeholder="ava"
-                                value={ava}
-                                onChange={(e) => setAva(e.target.value)}
+                            <input
+                                type="file"
+                                accept="image/*"
+                                id="avatarInput"
+                                onChange={onAvatarPick}
                             />
                             <Button type={"submit"}>Update Profile</Button>
                         </>
@@ -184,7 +231,7 @@ const ProfilePage: React.FC = () => {
 
             {didAuth && profile && !loading && !error && (
                 <div className={s.userContainer}>
-                    <img className={s.userAvatar} src={profile.ava} alt={"user_image"} />
+                    <img className={s.userAvatar} src={profile.ava} alt={"user_image"}/>
                     <span className={s.userName}>Имя: {profile.name}</span>
                     {my && (
                         <div className={s.userStat}>

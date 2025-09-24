@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { Credentials, Profile, User, UserStatistic, MyStatistic } from "../shared/types/types";
+import type { Credentials, Profile, User, UserStatistic, MyStatistic, TaskCreatePayload, Task } from "../shared/types/types";
 
 const API_URL = "http://localhost:8000";
 const axios_api = axios.create({ baseURL: API_URL });
@@ -64,9 +64,30 @@ export const checkAuth = async (creds: Credentials): Promise<void> => {
     });
 };
 
+// --- НОВОЕ: API для задач ---
+export const tasksApi = {
+    createTask: async (taskData: TaskCreatePayload, creds?: Credentials): Promise<Task> => {
+    try {
+        const res = await axios_api.post<Task>(
+            "/task-api/createTask",
+            taskData,
+            {
+                auth: creds ? { username: creds.username, password: creds.password } : undefined,
+            }
+        );
+        return res.data;
+    } catch (err) {
+        console.error('API Error:', err);
+        throw err;
+    }
+},
+};
+// --- КОНЕЦ НОВОГО ---
+
 export const api = {
     usersApi,
     profileApi,
     statisticsApi,  // <— Мой экспорт
     checkAuth,
+    tasksApi,
 };

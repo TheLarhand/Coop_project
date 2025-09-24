@@ -6,20 +6,12 @@ import MainLayout from '../../layouts/MainLayout'
 import s from './CreateTask.module.scss'
 import { fetchUsers, selectAllUsers, selectUsersLoading, selectUsersError } from '../../store/slices/usersSlice';
 import { useDispatch, useSelector } from 'react-redux';
-import type { User } from '../../shared/types/types';
+import { createTask } from "../../store/slices/taskAddSlice"; 
 import type { AppDispatch } from '../../store/store';
-import { fetchProfile, selectProfile  } from "../../store/slices/profileSlice";
+import { fetchProfile, selectProfile } from "../../store/slices/profileSlice";
 import Select from "../../shared/ui/Select/Select";
+import type { TaskCreatePayload } from "../../shared/types/types";
 
-
- interface Task {
-    id: string
-    name: string;
-    description: string;
-    assigneeId: string;
-    deadline: string;
-    creator: string
-  }
 
 function CreateTaskPage() {
 
@@ -32,6 +24,8 @@ function CreateTaskPage() {
   const [taskDiscription, setTaskDiscription] = useState('')
   const [selectedAssignee, setSelectedAssignee] = useState('');
   const [deadline, setDeadline] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
   const dispatch = useDispatch<AppDispatch>();
 
@@ -42,36 +36,49 @@ function CreateTaskPage() {
 
   const assigneeOptions = users.map(user => ({
     label: user.name,
-    value: user.name,
+    value: String(user.id),
   }));
 
-   const generateUniqueId = (): string => {
-    return Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
-  };
+  const today = new Date().toISOString().split('T')[0]
 
-  const handleAddTask = (e: FormEvent) => {
+  const handleAddTask = async (e: FormEvent) => {
     e.preventDefault();
 
     if (!profile || !profile.name) {
-        console.error("Профиль пользователя не загружен. Невозможно создать задачу.");
-        return;
+      console.error("Профиль пользователя не загружен. Невозможно создать задачу.");
+      setStatusMessage("Ошибка: профиль пользователя не загружен.");
+      return;
     }
 
-    const newTask: Task = {
-      id: generateUniqueId(),
-      name: taskName,
+    const performerId = users.find(user => String(user.id) === selectedAssignee)?.id;
+    if (!performerId) {
+      setStatusMessage("Ошибка: Исполнитель не найден.");
+      return;
+    }
+
+    const newTaskPayload: TaskCreatePayload = {
+      title: taskName,
       description: taskDiscription,
-      assigneeId: selectedAssignee,
+      performer: performerId,
       deadline: deadline,
-      creator: profile.name
     };
 
-    console.log('New task:', newTask);
+    setIsSaving(true);
+    setStatusMessage(null);
 
-    setTaskName('');
-    setTaskDiscription('');
-    setSelectedAssignee('');
-    setDeadline('');
+    try {
+      await dispatch(createTask(newTaskPayload)).unwrap();
+      setStatusMessage("Задача успешно добавлена!");
+      setTaskName('');
+      setTaskDiscription('');
+      setSelectedAssignee('');
+      setDeadline('');
+    } catch (err: any) {
+      console.error("Failed to save the task: ", err);
+      setStatusMessage(`Ошибка: ${err.message || 'Неизвестная ошибка'}`);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const clearBtn = () => {
@@ -80,7 +87,7 @@ function CreateTaskPage() {
     setSelectedAssignee('');
     setDeadline('');
   }
-  
+
   return (
     <MainLayout>
       <div className={s.container}>
@@ -91,9 +98,9 @@ function CreateTaskPage() {
 
             <div className={s.formGroup}>
               <label htmlFor="taskName">Название задачи</label>
-              <Input type="text" required 
+              <Input type="text" required
                 placeholder=""
-                value={taskName} 
+                value={taskName}
                 onChange={(e) => setTaskName(e.target.value)}></Input>
             </div>
 
@@ -101,7 +108,7 @@ function CreateTaskPage() {
               <label htmlFor="taskDescription" className={s.lable}>Описание задачи</label>
               <Textarea
                 required
-                value={taskDiscription} 
+                value={taskDiscription}
                 onChange={(e) => setTaskDiscription(e.target.value)}
               ></Textarea>
             </div>
@@ -120,9 +127,10 @@ function CreateTaskPage() {
 
             <div className={s.formGroup}>
               <label htmlFor="deadline" className={s.lable}>Дедлайн</label>
-              <Input type="date" required 
+              <Input type="date" required
                 placeholder=""
-                value={deadline} 
+                value={deadline}
+                min={today}
                 onChange={(e) => setDeadline(e.target.value)}></Input>
             </div>
 

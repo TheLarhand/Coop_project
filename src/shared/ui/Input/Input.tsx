@@ -11,6 +11,7 @@ interface InputProps {
   success?: boolean
   className?: string // для возможности кастомизировать
   required?: boolean
+  min?: string
 }
 
 function Input({
@@ -22,7 +23,8 @@ function Input({
   error = false,
   success = false,
   className = '',
-  required= false
+  required= false,
+  min
 }: InputProps) {
   const inputClasses = [
     s.input,
@@ -41,6 +43,7 @@ function Input({
       placeholder={placeholder}
       disabled={disabled}
       required={required}
+      min={min}
     />
   )
 }

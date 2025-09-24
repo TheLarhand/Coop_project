@@ -29,3 +29,19 @@ export interface MyStatistic {
     inWorkTasks: number;
     failedTasks: number;
 }
+
+export interface Task {
+    id: string;
+    name: string;
+    description: string;
+    assigneeId: string;
+    deadline: string;
+    creator: string;
+}
+
+export interface TaskCreatePayload {
+  title: string;
+  description: string;
+  performer: number; 
+  deadline: string;
+}

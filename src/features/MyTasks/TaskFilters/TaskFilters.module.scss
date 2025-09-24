@@ -1,0 +1,16 @@
+@use "../../../styles/abstracts/variables" as *;
+
+.filters {
+  display: flex;
+  align-items: center;
+  gap: $space-lg;
+  margin-bottom: $space-lg;
+}
+
+.nowrap {
+  text-wrap: nowrap;
+}
+
+.short {
+  width: 200px;
+}

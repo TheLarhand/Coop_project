@@ -1,0 +1,9 @@
+@use "../../styles/abstracts/variables" as *;
+
+.page {
+  color: $text-color;
+}
+
+.title {
+  margin-bottom: $space-md;
+}

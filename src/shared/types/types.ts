@@ -29,3 +29,12 @@ export interface MyStatistic {
     inWorkTasks: number;
     failedTasks: number;
 }
+
+export interface Task {
+    id: number;
+    title: string;
+    description: string;
+    deadline: string;
+    status: "in work" | "completed" | "failed";
+    author: string;
+}

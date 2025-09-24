@@ -1,0 +1,58 @@
+@use "../../../styles/abstracts/variables" as *;
+
+.card {
+  background: $bg-color;
+  border: 1px solid $border-color;
+  border-radius: $radius-md;
+  padding: $space-md;
+  box-shadow: $shadow-sm;
+  transition: box-shadow 0.2s ease;
+
+  &:hover {
+    box-shadow: $shadow-md;
+  }
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $space-sm;
+
+  h3 {
+    font-size: $font-size-lg;
+    margin: 0;
+  }
+}
+
+.status {
+  padding: 2px 8px;
+  border-radius: $radius-sm;
+  font-size: $font-size-sm;
+  color: $text-color-inverse;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.statusWork {
+  background: $color-blue-1;
+}
+.statusCompleted {
+  background: $color-green-1;
+}
+.statusFailed {
+  background: $color-red-1;
+}
+
+.desc {
+  font-size: $font-size-md;
+  margin-bottom: $space-sm;
+  color: $text-color;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: $font-size-sm;
+  color: $text-color-light;
+}

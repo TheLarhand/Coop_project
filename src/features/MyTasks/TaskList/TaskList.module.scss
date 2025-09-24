@@ -1,0 +1,16 @@
+@use "../../../styles/abstracts/variables" as *;
+
+.list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $space-md;
+}
+
+.empty {
+  padding: $space-lg;
+  text-align: center;
+  color: $text-color-light;
+  font-size: $font-size-md;
+  background: $color-grey-1;
+  border-radius: $radius-md;
+}

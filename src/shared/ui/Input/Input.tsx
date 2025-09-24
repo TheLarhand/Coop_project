@@ -10,7 +10,7 @@ interface InputProps {
   error?: boolean
   success?: boolean
   className?: string // для возможности кастомизировать
-  required: boolean
+  required?: boolean
   min?: string
 }
 

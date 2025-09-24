@@ -1,28 +1,28 @@
 import { useState, useRef, useEffect } from "react"
 import s from "./Select.module.scss"
 
-interface Option {
+interface Option<T> {
   label: string
-  value: string 
+  value: T
 }
 
-interface SelectProps {
-  value: string | null
-  onChange: (value: string) => void
-  options: Option[]
+interface SelectProps<T> {
+  value: T | null
+  onChange: (value: T) => void
+  options: Option<T>[]
   placeholder?: string
   disabled?: boolean
   className?: string
 }
 
-function Select({
+function Select<T>({
   value,
   onChange,
   options,
   placeholder = "Select...",
   disabled,
   className,
-}: SelectProps) {
+}: SelectProps<T>) {
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState("")
   const wrapperRef = useRef<HTMLDivElement>(null)
@@ -33,7 +33,7 @@ function Select({
 
   const selectedLabel = options.find(opt => opt.value === value)?.label
 
-  const handleSelect = (val: string) => {
+  const handleSelect = (val: T) => {
     onChange(val)
     setOpen(false)
     setSearch("")
@@ -41,28 +41,17 @@ function Select({
 
   // закрытие при клике вне
   useEffect(() => {
-  // Функция, которая проверяет: клик был снаружи селекта или внутри
-  const handleClickOutside = (e: MouseEvent) => {
-    // wrapperRef.current — это ссылка на корневой div компонента <Select>
-    // contains(e.target) проверяет, находится ли кликнутый элемент внутри этого div
-    if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
-      setOpen(false) // если клик вне селекта → закрываем дропдаун
+    const handleClickOutside = (e: MouseEvent) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+        setOpen(false)
+      }
     }
-  }
-
-  // Вешаем слушатель на документ — при любом клике проверяем, где он произошёл
-  document.addEventListener("mousedown", handleClickOutside)
-
-  // Чистим слушатель при размонтировании компонента,
-  // чтобы не было утечек памяти и лишних обработчиков
-  return () => document.removeEventListener("mousedown", handleClickOutside)
-}, [])
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [])
 
   return (
-    <div
-      ref={wrapperRef}
-      className={`${s.wrapper} ${className || ""}`}
-    >
+    <div ref={wrapperRef} className={`${s.wrapper} ${className || ""}`}>
       <button
         type="button"
         className={`${s.control} ${disabled ? s.disabled : ""}`}
@@ -88,7 +77,7 @@ function Select({
             {filtered.length > 0 ? (
               filtered.map(opt => (
                 <li
-                  key={opt.value}
+                  key={String(opt.value)} // чтобы ключ всегда был string
                   className={`${s.option} ${opt.value === value ? s.selected : ""}`}
                   onClick={() => handleSelect(opt.value)}
                 >

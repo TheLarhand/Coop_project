@@ -1,0 +1,35 @@
+@use "../../../styles/abstracts/variables" as *;
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: $space-md;
+  margin-top: $space-lg;
+
+  button {
+    padding: $space-sm $space-md;
+    border: 1px solid $border-color;
+    border-radius: $radius-sm;
+    font-size: $font-size-md;
+    cursor: pointer;
+    background: $bg-color;
+    box-shadow: $shadow-sm;
+    transition: background 0.2s ease;
+
+    &:hover:not(:disabled) {
+      background: $color-grey-1;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      color: $disabled-color;
+      border-color: $disabled-color;
+    }
+  }
+
+  span {
+    font-size: $font-size-md;
+    color: $text-color;
+  }
+}

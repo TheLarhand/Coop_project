@@ -21,3 +21,5 @@ export const store = configureStore({
 // Типы для TypeScript интеграции
 export type RootState = ReturnType<typeof store.getState>
 export type AppDispatch = typeof store.dispatch
+
+

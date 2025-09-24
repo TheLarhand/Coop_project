@@ -10,6 +10,7 @@ interface InputProps {
   error?: boolean
   success?: boolean
   className?: string // для возможности кастомизировать
+  required?: boolean
 }
 
 function Input({
@@ -20,7 +21,8 @@ function Input({
   disabled = false,
   error = false,
   success = false,
-  className = ''
+  className = '',
+  required= false
 }: InputProps) {
   const inputClasses = [
     s.input,
@@ -38,6 +40,7 @@ function Input({
       onChange={onChange}
       placeholder={placeholder}
       disabled={disabled}
+      required={required}
     />
   )
 }

@@ -1,5 +1,5 @@
 import MainLayout from '../../layouts/MainLayout.tsx'
-import React, { useState } from "react";
+import React, {useEffect, useRef, useState} from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch } from "../../store/store.ts";
 import {login, logOut, selectIsAuthenticated, selectUsername} from "../../store/slices/authSlice.ts";
@@ -13,6 +13,11 @@ import {
     selectProfileLoading
 } from "../../store/slices/profileSlice.ts";
 import ProfileModal from "../../shared/ui/ProfileModal/ProfileModal.tsx";
+import Button from "../../shared/ui/Button/Button.tsx";
+import Input from "../../shared/ui/Input/Input.tsx";
+import {fetchMyStatistic, selectStatistics} from "../../store/slices/statisticsSlice.ts";
+import UserStatCard from "../../features/dashboard/UserStatCard/UserStatCard.tsx";
+import { fileToAvatarDataURL  } from "./utils/utils";
 
 const ProfilePage: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -21,14 +26,22 @@ const ProfilePage: React.FC = () => {
     const loading = useSelector(selectProfileLoading);
     const error = useSelector(selectProfileError);
     const authedUsername = useSelector(selectUsername);
+    const { my } = useSelector(selectStatistics);
 
     const [userName, setUserName] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [ava, setAva] = useState<string>('');
+    const fileRef = useRef<HTMLInputElement | null>(null);
 
     const [modalOpen, setModalOpen] = useState<boolean>(false);
     const [modalError, setModalError] = useState<string | null>(null);
     const [isEditing, setIsEditing] = useState<boolean>(false);
+
+    useEffect(() => {
+        (async () => {
+            if (didAuth) await dispatch(fetchMyStatistic());
+        })()
+    }, [dispatch, didAuth]);
 
     const toggleModal = (editing: boolean = false) => {
         setModalOpen(!modalOpen);
@@ -50,6 +63,7 @@ const ProfilePage: React.FC = () => {
         setModalError('');
         setModalOpen(false);
         if (isEditing) setIsEditing(false);
+        if (fileRef.current) fileRef.current.value = "";
     }
 
     const handleAuth = async (e?: React.FormEvent) => {
@@ -85,11 +99,43 @@ const ProfilePage: React.FC = () => {
         dispatch(clearProfile());
     }
 
+    const onAvatarPick: React.ChangeEventHandler<HTMLInputElement> = async (e) => {
+        setModalError(null);
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        if (!file.type.startsWith("image/")) {
+            setModalError("Пожалуйста, выберите изображение.");
+            if (fileRef.current) fileRef.current.value = "";
+            return;
+        }
+
+        // общий лимит (и для статичных, и для анимированных)
+        if (file.size > 5 * 1024 * 1024) {
+            setModalError("Файл слишком большой (> 5 МБ).");
+            if (fileRef.current) fileRef.current.value = "";
+            return;
+        }
+
+        try {
+            const { dataURL } = await fileToAvatarDataURL(file, {
+                maxSide: 256,
+                mime: "image/webp",
+                quality: 0.90,
+                maxBytesAnimated: 5 * 1024 * 1024,
+            });
+            setAva(dataURL);
+        } catch (err: any) {
+            setModalError(err?.message ?? "Не удалось обработать изображение");
+            if (fileRef.current) fileRef.current.value = "";
+        }
+    };
+
     const handleUpdateProfile = async (name?: string, ava?: string, e?: React.FormEvent) => {
         e?.preventDefault();
         if (!didAuth) return;
         try {
-            await dispatch(updateProfile({ name: name, ava: ava })).unwrap();
+            await dispatch(updateProfile({ name: name?.trim(), ava: ava })).unwrap();
             clearModal()
             console.log("Profile updated")
         } catch (error: any) {
@@ -107,21 +153,21 @@ const ProfilePage: React.FC = () => {
                     render={() => (
                         <>
                             <h2 className={s.formContainer__form__title}>{ didAuth ? 'Change Account Form' : 'Auth Form' }</h2>
-                            <input
+                            <Input
                                 placeholder="username"
                                 type="text"
                                 value={userName}
-                                required
+                                required={true}
                                 onChange={(e) => setUserName(e.target.value)}
                             />
-                            <input
+                            <Input
                                 placeholder="password"
                                 type="password"
                                 value={password}
-                                required
+                                required={true}
                                 onChange={(e) => setPassword(e.target.value)}
                             />
-                            <button type="submit">{ didAuth ? 'Change Account' : 'Auth' }</button>
+                            <Button type={"submit"}>{ didAuth ? 'Change Account' : 'Auth' }</Button>
                         </>
                     )}
                 />
@@ -135,20 +181,32 @@ const ProfilePage: React.FC = () => {
                     render={() => (
                         <>
                             <h2 className={s.formContainer__form__title}>Update Profile form</h2>
-                            <input
+
+                            {(ava || profile?.ava) && (
+                                <div className={s.avatarPreview}>
+                                    <img
+                                        className={s.avatarPreview__img}
+                                        src={ava || profile!.ava}
+                                        alt="avatar preview"
+                                    />
+                                    {ava && <small className={s.avatarPreview__hint}>Предпросмотр (ещё не сохранено)</small>}
+                                </div>
+                            )}
+
+                            <Input
                                 placeholder="name"
                                 type="text"
                                 value={userName}
-                                required
+                                required={true}
                                 onChange={(e) => setUserName(e.target.value)}
                             />
-                            <textarea
-                                placeholder="ava"
-                                value={ava}
-                                required
-                                onChange={(e) => setAva(e.target.value)}
+                            <input
+                                type="file"
+                                accept="image/*"
+                                id="avatarInput"
+                                onChange={onAvatarPick}
                             />
-                            <button type="submit">Update Profile</button>
+                            <Button type={"submit"}>Update Profile</Button>
                         </>
                     )}
                 />
@@ -156,14 +214,14 @@ const ProfilePage: React.FC = () => {
 
             {didAuth && (
                 <div className={s.buttonsContainer}>
-                    <button type="button" onClick={() => toggleModal()}>Change profile</button>
-                    <button type="button" onClick={() => toggleModal(true)}>Update profile</button>
-                    <button type="button" onClick={handleLogOut}>Log Out</button>
+                    <Button type={"button"} onClick={() => toggleModal()}>Change profile</Button>
+                    <Button type={"button"} onClick={() => toggleModal(true)}>Update profile</Button>
+                    <Button type={"button"} onClick={handleLogOut}>Log Out</Button>
                 </div>
             )}
 
             {!didAuth && (
-                <button type="button" onClick={() => toggleModal()}>Auth</button>
+                <Button type={"button"} onClick={() => toggleModal()}>Auth</Button>
             )}
 
             {error && (
@@ -176,8 +234,22 @@ const ProfilePage: React.FC = () => {
 
             {didAuth && profile && !loading && !error && (
                 <div className={s.userContainer}>
-                    <img className={s.userAvatar} src={profile.ava} alt={"user_image"} />
+                    <img className={s.userAvatar} src={profile.ava} alt={"user_image"}/>
                     <span className={s.userName}>Имя: {profile.name}</span>
+                    {my && (
+                        <div className={s.userStat}>
+                            <UserStatCard
+                                id={0}
+                                name={profile.name}
+                                ava={profile.ava}
+                                completed={my!.completedTasks}
+                                inWork={my!.inWorkTasks}
+                                failed={my!.failedTasks}
+                                highlight={false}
+                                total={my!.completedTasks + my!.inWorkTasks + my!.failedTasks}
+                            />
+                        </div>
+                    )}
                 </div>
             )}
         </MainLayout>

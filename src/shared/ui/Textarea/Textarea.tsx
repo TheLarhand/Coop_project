@@ -8,7 +8,7 @@ interface TextareaProps {
   error?: boolean
   success?: boolean
   className?: string
-  required: boolean
+  required?: boolean
 }
 
 function Textarea({ value, onChange, placeholder, disabled, error, success, className, required }: TextareaProps) {

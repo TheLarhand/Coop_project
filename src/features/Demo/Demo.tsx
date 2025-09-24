@@ -17,6 +17,9 @@ function Demo() {
   const [agree, setAgree] = useState(false)
   const [selected, setSelected] = useState("option1")
 
+  const [num, setNum] = useState<number | null>(null)
+  const [bool, setBool] = useState<boolean | null>(null)
+
   const heroes = [
     { value: "batman", label: "Batman" },
     { value: "superman", label: "Superman" },
@@ -47,6 +50,29 @@ function Demo() {
         onChange={setHero}
         options={heroes}
         placeholder="Choose hero"
+      />
+
+      {/* Поисковик в дропдауне появляется при количестве option больше 5  */}
+
+      <Select
+        value={num}
+        onChange={setNum}
+        options={[
+          { label: "Один", value: 1 },
+          { label: "Два", value: 2 },
+          { label: "Три", value: 3 },
+        ]}
+        placeholder="Выбери число"
+      /><h2>{num!==null &&  num * num}</h2>
+
+      <Select
+        value={bool}
+        onChange={setBool}
+        options={[
+          { label: "Да", value: true },
+          { label: "Нет", value: false },
+        ]}
+        placeholder="Выбери ответ"
       />
 
       <Switch

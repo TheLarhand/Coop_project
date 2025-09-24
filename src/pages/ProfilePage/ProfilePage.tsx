@@ -157,12 +157,14 @@ const ProfilePage: React.FC = () => {
                                 placeholder="username"
                                 type="text"
                                 value={userName}
+                                required={true}
                                 onChange={(e) => setUserName(e.target.value)}
                             />
                             <Input
                                 placeholder="password"
                                 type="password"
                                 value={password}
+                                required={true}
                                 onChange={(e) => setPassword(e.target.value)}
                             />
                             <Button type={"submit"}>{ didAuth ? 'Change Account' : 'Auth' }</Button>
@@ -195,6 +197,7 @@ const ProfilePage: React.FC = () => {
                                 placeholder="name"
                                 type="text"
                                 value={userName}
+                                required={true}
                                 onChange={(e) => setUserName(e.target.value)}
                             />
                             <input
@@ -237,7 +240,7 @@ const ProfilePage: React.FC = () => {
                         <div className={s.userStat}>
                             <UserStatCard
                                 id={0}
-                                name={userName}
+                                name={profile.name}
                                 ava={profile.ava}
                                 completed={my!.completedTasks}
                                 inWork={my!.inWorkTasks}

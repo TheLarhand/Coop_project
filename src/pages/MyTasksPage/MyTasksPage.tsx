@@ -1,47 +1,74 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchMyTasks, completeMyTask, selectMyTasks } from "../../store/slices/myTasksSlice";
-import type { RootState, AppDispatch } from "../../store/store";
+import type { RootState } from "../../store/store";
+import { completeMyTask, fetchMyTasks } from "../../store/slices/myTasksSlice";
+import { fetchMyStatistic, selectStatistics } from "../../store/slices/statisticsSlice";
+import Pagination from "../../shared/ui/Pagination/Pagination";
 import MainLayout from "../../layouts/MainLayout";
 
+
 const MyTasksPage: React.FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
-  const { items, loading, error } = useSelector((state: RootState) => selectMyTasks(state));
+  const dispatch = useDispatch();
+  const { items, loading, error } = useSelector((state: RootState) => state.myTasks);
+  const statistics = useSelector(selectStatistics);
+
+  const [page, setPage] = useState(1);
+  const pageSize = 2;
+
+  // загружаем задачи + статистику
+  useEffect(() => {
+    const start = (page - 1) * pageSize;
+    dispatch(fetchMyTasks({ start, limit: pageSize }) as any);
+  }, [dispatch, page, pageSize]);
 
   useEffect(() => {
-    dispatch(fetchMyTasks({ start: 0, limit: 10 }));
+    dispatch(fetchMyStatistic() as any);
   }, [dispatch]);
 
-  const handleComplete = (id: number) => {
-    const result = prompt("Введите комментарий к выполненной задаче:");
-    if (result) {
-      dispatch(completeMyTask({ taskId: id, result }));
-    }
-  };
-
-  if (loading) return <p>Загрузка...</p>;
-  if (error) return <p style={{ color: "red" }}>{error}</p>;
+  // считаем total из статистики
+  const total =
+    (statistics.my?.completedTasks ?? 0) +
+    (statistics.my?.inWorkTasks ?? 0) +
+    (statistics.my?.failedTasks ?? 0);
 
   return (
     <MainLayout>
       <h1>Мои задачи</h1>
-      {items.length === 0 ? (
-        <p>Задач нет</p>
-      ) : (
-        <ul>
-          {items.map((task) => (
-            <li key={task.id}>
-              <strong>{task.title}</strong> — {task.status} (до {task.deadline})
-              <br />
-              {task.description}
-              <br />
-              {task.status === "in work" && (
-                <button onClick={() => handleComplete(task.id)}>Завершить</button>
-              )}
-            </li>
-          ))}
-        </ul>
-      )}
+
+      {loading && <p>Загрузка...</p>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
+
+      <ul>
+        {items.map((task) => (
+          <li key={task.id}>
+            {task.title} — {task.status}
+            {task.status === "in work" ? (
+              <button
+                onClick={() =>
+                  dispatch(completeMyTask({ taskId: task.id, result: "Выполнил задачу" }) as any)
+                }
+              >
+                Завершить
+              </button>
+            ) : (
+              <button
+                onClick={() =>
+                  dispatch(completeMyTask({ taskId: task.id, result: "" }) as any)
+                }
+              >
+                Снять отметку
+              </button>
+            )}
+          </li>
+        ))}
+      </ul>
+
+      <Pagination
+        total={total}
+        page={page}
+        pageSize={pageSize}
+        onPageChange={setPage}
+      />
     </MainLayout>
   );
 };

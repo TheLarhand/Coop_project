@@ -1,45 +1,119 @@
 @use '../../styles/abstracts/variables' as *;
 
-.userContainer {
+.profileCard {
   position: relative;
   width: $breakpoint-xl;
-  height: auto;
+  margin: 0 auto;
+  background: $bg-color;
+  border: 1px solid $border-color;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-md;
+  overflow: hidden;
 }
 
-.userAvatar {
-  width: 128px;
-  height: 128px;
+.cover {
+  height: 120px;
+  background: linear-gradient(135deg, $color-teal-1, $color-blue-1 55%, $color-purple-1);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-md;
+  padding: $space-lg $space-lg $space-md;
+  margin-top: -48px;
+}
+
+.identity {
+  display: flex;
+  align-items: center;
+  gap: $space-md;
+}
+
+.userAvatarXL {
+  width: 96px;
+  height: 96px;
   border-radius: 50%;
   object-fit: cover;
   image-rendering: auto;
+  border: 4px solid $bg-color;
+  box-shadow: 0 6px 16px rgba(0,0,0,.18);
 }
 
-.userName {
-  font-size: 20px;
-  font-weight: 500;
-}
-
-.userStat {
-  margin-top: 50px;
-}
-
-.buttonsContainer {
-  width: max-content;
-  height: max-content;
-  position: relative;
+.nameBlock {
   display: flex;
-  margin-bottom: 12px;
-  flex-direction: row;
+  flex-direction: column;
+  margin-top: 15px;
+}
+
+.displayName {
+  margin: 0;
+  font-size: 28px;
+  line-height: 1.2;
+  color: $text-color;
+}
+
+.username {
+  margin-top: 2px;
+  color: $text-color-light;
+  font-size: $font-size-sm;
+}
+
+.actions {
+  display: flex;
+  gap: $space-sm;
   flex-wrap: wrap;
-  gap: 20px;
-  align-items: center;
-  justify-content: center;
+  margin-top: 40px;
 
   button {
     &:hover {
       cursor: pointer;
     }
   }
+}
+
+.stats {
+  padding: 0 $space-lg $space-lg;
+  border-top: 1px dashed $border-color;
+}
+
+.kpis {
+  margin: $space-md 0 $space-md;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(140px, 1fr));
+  gap: $space-sm;
+  list-style: none;
+}
+
+.kpi {
+  background: #f7fbfa;
+  border: 1px solid $border-color;
+  border-radius: $radius-md;
+  padding: $space-sm $space-md;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  b {
+    font-size: 18px;
+    color: $text-color;
+  }
+  span {
+    color: $text-color-light;
+    font-size: $font-size-sm;
+  }
+}
+
+.userStatCardWrap {
+  margin-top: $space-sm;
+}
+
+.centered {
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }
 
 .avatarPreview {
@@ -54,9 +128,58 @@
     border-radius: 50%;
     object-fit: cover;
     image-rendering: auto;
+    border: 2px solid $border-color;
   }
 
   &__hint {
     opacity: 0.7;
+  }
+}
+
+.fileRow {
+  margin: 8px 0 12px;
+}
+
+.fileInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  border: 0;
+}
+
+.fileBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: $space-sm $space-md;
+  font-size: $font-size-md;
+  background: $secondary-color;
+  color: $text-color-inverse;
+  border-radius: $radius-md;
+  box-shadow: $shadow-sm;
+  transition: filter .2s ease, transform .1s ease;
+
+  &:hover { filter: brightness(1.1); cursor: pointer; }
+  &:active { transform: scale(.98); }
+}
+
+@media (max-width: $breakpoint-md) {
+  .profileCard { width: 100%; }
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $space-sm;
+  }
+  .actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  .kpis {
+    grid-template-columns: 1fr;
   }
 }

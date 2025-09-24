@@ -39,3 +39,10 @@ export interface Task {
     author: string;
     result?: string;
 }
+
+export interface TaskCreatePayload {
+    title: string;
+    description: string;
+    performer: number;
+    deadline: string;
+}

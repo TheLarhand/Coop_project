@@ -4,7 +4,13 @@ import { api } from "../../api/api";
 import type { RootState } from "../store";
 import type { MyStatistic, UserStatistic } from "../../shared/types/types";
 
-// ДОБАВИЛИ режимы сортировки
+/**
+ * Режимы сортировки для Главной (Dashboard/Overview).
+ * - completedDesc — по выполненным задачам, по убыванию.
+ * - failedDesc — по просроченным, по убыванию.
+ * - inWorkDesc — по «в работе», по убыванию.
+ * - nameAsc — по имени, A→Z.
+ */
 export type SortMode = "completedDesc" | "nameAsc" | "failedDesc" | "inWorkDesc";
 
 interface StatisticsState {
@@ -23,6 +29,9 @@ const initialState: StatisticsState = {
     sortMode: "completedDesc",
 };
 
+/**
+ * Глобальная статистика — PUBLIC (без авторизации).
+ */
 export const fetchGlobalStatistic = createAsyncThunk<
     UserStatistic[],
     void,
@@ -37,6 +46,9 @@ export const fetchGlobalStatistic = createAsyncThunk<
     }
 });
 
+/**
+ * Моя статистика — требует Basic Auth.
+ */
 export const fetchMyStatistic = createAsyncThunk<
     MyStatistic | null,
     void,
@@ -63,6 +75,7 @@ const statisticsSlice = createSlice({
         clearError: (state) => {
             state.error = null;
         },
+        resetStatistics: () => initialState,
     },
     extraReducers: (builder) => {
         builder
@@ -87,8 +100,23 @@ const statisticsSlice = createSlice({
     },
 });
 
-export const { setSortMode, clearError } = statisticsSlice.actions;
+export const { setSortMode, clearError, resetStatistics } = statisticsSlice.actions;
+
+/** Базовый селектор стейта статистики */
 export const selectStatistics = (state: RootState) => state.statistics;
+
+/** Суммы по глобальной статистике */
+export const selectGlobalTotals = (state: RootState) => {
+    const { global } = state.statistics;
+    return global.reduce(
+        (acc, u) => {
+            acc.completed += u.completedTasks;
+            acc.inWork += u.inWorkTasks;
+            acc.failed += u.failedTasks;
+            return acc;
+        },
+        { completed: 0, inWork: 0, failed: 0 }
+    );
+};
+
 export default statisticsSlice.reducer;
-
-

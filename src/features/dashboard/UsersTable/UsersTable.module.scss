@@ -1,0 +1,93 @@
+@use "../../../styles/abstracts/variables" as *;
+
+.wrap {
+    border: 1px solid $border-color;
+    border-radius: $radius-lg;
+    background: $bg-color;
+    box-shadow: $shadow-sm;
+}
+
+.head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: $space-sm $space-md;
+    border-bottom: 1px dashed $border-color;
+
+    b {
+        font-size: $font-size-lg;
+    }
+}
+
+.sortNote {
+    opacity: 0.7;
+    font-size: $font-size-sm;
+}
+
+.scroller {
+    overflow: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th,
+    td {
+        padding: $space-sm $space-md;
+        border-bottom: 1px solid $border-color;
+        vertical-align: middle;
+    }
+
+    thead th {
+        background: #f7fbfa;
+        position: sticky;
+        top: 0;
+        z-index: 1;
+    }
+}
+
+.person {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ava {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+}
+
+.center {
+    text-align: center;
+}
+
+.click {
+    cursor: pointer;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+.me {
+    outline: 2px solid $primary-color;
+    outline-offset: -2px;
+    background: rgba(26, 188, 156, 0.05);
+}
+
+.badge {
+    font-style: normal;
+    font-size: 10px;
+    background: $primary-color;
+    color: $text-color-inverse;
+    padding: 2px 6px;
+    border-radius: 8px;
+}
+
+.empty {
+    padding: $space-md;
+    text-align: center;
+    opacity: 0.7;
+}

@@ -1,30 +1,40 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import MainLayout from "../layouts/MainLayout";
 import Button from "../shared/ui/Button/Button";
 import { useDispatch, useSelector } from "react-redux";
-import type { AppDispatch } from "../store/store";
+import type { AppDispatch, RootState } from "../store/store";
 
 import {
   fetchGlobalStatistic,
   fetchMyStatistic,
   selectStatistics,
   setSortMode,
+  type SortMode,
 } from "../store/slices/statisticsSlice";
 
-// авторизация и профиль
 import { selectIsAuthenticated } from "../store/slices/authSlice";
 import { selectProfile } from "../store/slices/profileSlice";
 
 import ChartDonut from "../shared/ui/ChartDonut/ChartDonut";
 import UserStatCard from "../features/dashboard/UserStatCard/UserStatCard";
+import UsersTable from "../features/dashboard/UsersTable/UsersTable";
+import { exportUsersStatToCSV } from "../shared/utils/csv";
+import { exportUsersStatToXLSX } from "../shared/utils/xlsxExport"; // опционально, см. файл ниже
+import type { UserStatistic } from "../shared/types/types";
+
+import {
+  makeSelectPaginated,
+  makeSelectSorted,
+  selectGlobalTotals,
+} from "../store/selectors/statisticsSelectors";
 
 export default function StatisticPage() {
   const dispatch = useDispatch<AppDispatch>();
 
-  // селекторы
+  // селекторы auth/profile/statistics
   const isAuth = useSelector(selectIsAuthenticated);
   const me = useSelector(selectProfile); // { name, ava } | null
-  const { global, my, loading, error, sortMode } = useSelector(selectStatistics);
+  const { loading, error, sortMode } = useSelector(selectStatistics);
 
   // загрузка данных
   useEffect(() => {
@@ -32,37 +42,62 @@ export default function StatisticPage() {
     if (isAuth) dispatch(fetchMyStatistic());
   }, [dispatch, isAuth]);
 
-  // сохраняем/читаем время визита
+  // показываем прошлый визит, и сразу перезаписываем нынешним
+  const [lastVisit, setLastVisit] = useState<Date | null>(null);
   useEffect(() => {
-    const nowISO = new Date().toISOString();
-    if (!localStorage.getItem("dashboard:lastVisit")) {
-      localStorage.setItem("dashboard:lastVisit", nowISO);
-    }
-    // при каждом заходе обновляем
-    localStorage.setItem("dashboard:lastVisit", nowISO);
+    const prevISO = localStorage.getItem("dashboard:lastVisit");
+    if (prevISO) setLastVisit(new Date(prevISO));
+    localStorage.setItem("dashboard:lastVisit", new Date().toISOString());
   }, []);
-  const lastVisitISO = localStorage.getItem("dashboard:lastVisit");
-  const lastVisit = lastVisitISO ? new Date(lastVisitISO) : null;
 
-  // сортировка
-  const sorted = useMemo(() => {
-    const arr = [...global];
-    switch (sortMode) {
-      case "completedDesc":
-        arr.sort((a, b) => b.completedTasks - a.completedTasks);
-        break;
-      case "failedDesc":
-        arr.sort((a, b) => b.failedTasks - a.failedTasks);
-        break;
-      case "inWorkDesc":
-        arr.sort((a, b) => b.inWorkTasks - a.inWorkTasks);
-        break;
-      case "nameAsc":
-      default:
-        arr.sort((a, b) => a.name.localeCompare(b.name));
-    }
-    return arr;
-  }, [global, sortMode]);
+  // ------- Локальное состояние вида/поиска/пагинации
+  const [view, setView] = useState<"cards" | "table">(
+    (localStorage.getItem("dashboard:view") as "cards" | "table") || "cards"
+  );
+  const [query, setQuery] = useState(localStorage.getItem("dashboard:query") || "");
+  const [page, setPage] = useState(1);
+  const pageSize = 12;
+
+  // сохраняем view/query
+  useEffect(() => {
+    localStorage.setItem("dashboard:view", view);
+  }, [view]);
+  useEffect(() => {
+    localStorage.setItem("dashboard:query", query);
+  }, [query]);
+
+  // ------- Мемо-селекторы (создаём один раз)
+  const selectSorted = useMemo(() => makeSelectSorted(), []);
+  const selectPaginated = useMemo(() => makeSelectPaginated(), []);
+
+  // значения из селекторов
+  const globalTotals = useSelector(selectGlobalTotals);
+  const sorted = useSelector((s: RootState) => selectSorted(s, query, sortMode));
+  const { data: paginated, totalPages, currentPage } = useSelector((s: RootState) =>
+    selectPaginated(s, query, sortMode, page, pageSize)
+  );
+
+  // ресет страницы если перелистнули дальше последней
+  useEffect(() => {
+    if (page !== currentPage) setPage(currentPage);
+  }, [currentPage, page]);
+
+  // ------- Экспорт
+  const handleExportCSVAll = () => {
+    exportUsersStatToCSV(sorted);
+  };
+  const handleExportCSVPage = () => {
+    exportUsersStatToCSV(paginated, { filenameBase: "dashboard_stats_current_page" });
+  };
+  const handleExportXLSXAll = () => {
+    exportUsersStatToXLSX(sorted);
+  };
+
+  // смена сортировки -> страница 1
+  const setSort = (mode: SortMode) => {
+    dispatch(setSortMode(mode));
+    setPage(1);
+  };
 
   return (
     <MainLayout>
@@ -70,119 +105,167 @@ export default function StatisticPage() {
 
       {lastVisit && (
         <div style={{ opacity: 0.7, marginTop: 4 }}>
-          Последний визит на дашборд: {lastVisit.toLocaleString()}
+          Последний визит: {lastVisit.toLocaleString()}
         </div>
       )}
 
-      {/* Шапка с моим ником/авой (если авторизован) */}
-      {isAuth && me && (
-        <section
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 12,
-            marginTop: 12,
-          }}
+      {/* Верхняя панель */}
+      <div
+        style={{
+          display: "flex",
+          gap: 8,
+          flexWrap: "wrap",
+          margin: "16px 0 8px",
+          alignItems: "center",
+        }}
+      >
+        <Button
+          variant={view === "cards" ? "primary" : "secondary"}
+          onClick={() => setView("cards")}
         >
-          <img
-            src={me.ava}
-            alt={me.name}
-            width={40}
-            height={40}
-            style={{ borderRadius: 8 }}
-          />
-          <div>
-            <div style={{ fontWeight: 600 }}>{me.name}</div>
-            {my && (
-              <div style={{ fontSize: 12, opacity: 0.8 }}>
-                Мои задачи: {my.completedTasks + my.inWorkTasks + my.failedTasks} ·
-                Выполнено {my.completedTasks}
-              </div>
-            )}
-          </div>
-        </section>
-      )}
+          Карточки
+        </Button>
+        <Button
+          variant={view === "table" ? "primary" : "secondary"}
+          onClick={() => setView("table")}
+        >
+          Таблица
+        </Button>
 
-      {/* Кнопки сортировки */}
-      <div style={{ margin: "12px 0", display: "flex", gap: 8, flexWrap: "wrap" }}>
-        <Button
-          variant="secondary"
-          onClick={() => dispatch(setSortMode("completedDesc"))}
-        >
-          Сортировать по выполнено ↓
-        </Button>
-        <Button
-          variant="secondary"
-          onClick={() => dispatch(setSortMode("failedDesc"))}
-        >
-          Сортировать по просрочено ↓
-        </Button>
-        <Button
-          variant="secondary"
-          onClick={() => dispatch(setSortMode("inWorkDesc"))}
-        >
-          Сортировать по в работе ↓
-        </Button>
-        <Button
-          variant="secondary"
-          onClick={() => dispatch(setSortMode("nameAsc"))}
-        >
-          Сортировать по имени A→Z
-        </Button>
+        <div style={{ marginLeft: "auto", display: "flex", gap: 8 }}>
+          <input
+            placeholder="Поиск по имени…"
+            value={query}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setPage(1);
+            }}
+            style={{
+              padding: "8px 10px",
+              border: "1px solid #bdc3c7",
+              borderRadius: 8,
+              minWidth: 220,
+            }}
+          />
+          <Button variant="secondary" onClick={() => dispatch(fetchGlobalStatistic())}>
+            Обновить
+          </Button>
+          <Button onClick={handleExportCSVAll}>Экспорт CSV (всё)</Button>
+          <Button variant="secondary" onClick={handleExportCSVPage}>
+            Экспорт CSV (страница)
+          </Button>
+          <Button variant="secondary" onClick={handleExportXLSXAll}>
+            Экспорт XLSX
+          </Button>
+        </div>
       </div>
 
       {loading && <div>Загрузка…</div>}
       {error && <div style={{ color: "red" }}>{error}</div>}
 
-      {/* Моя статистика — только когда есть и пользователь авторизован */}
-      {isAuth && my && (
-        <section aria-label="Моя статистика" style={{ margin: "16px 0" }}>
-          <h3 style={{ margin: "6px 0" }}>Моя статистика</h3>
+      {/* Глобальная сводка */}
+      {!loading && !error && (
+        <section aria-label="Глобальная сводка" style={{ margin: "12px 0 20px" }}>
+          <h3 style={{ margin: "6px 0" }}>Глобальная сводка</h3>
           <ChartDonut
-            completed={my.completedTasks}
-            inWork={my.inWorkTasks}
-            failed={my.failedTasks}
-            size={80}
-            title="Моя статистика"
+            completed={globalTotals.completed}
+            inWork={globalTotals.inWork}
+            failed={globalTotals.failed}
+            size={96}
+            title="Глобальная статистика"
           />
         </section>
       )}
 
-      {/* Пустое состояние общей статистики */}
+      {/* Пусто */}
       {!loading && !error && sorted.length === 0 && (
         <div style={{ opacity: 0.7, marginTop: 12 }}>
-          Нет данных для отображения. Создайте задачи на других страницах, чтобы
-          здесь появились цифры.
+          Нет данных для отображения. Создайте задачи на других страницах, чтобы здесь
+          появились цифры.
         </div>
       )}
 
-      {/* Сетка карточек пользователей */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
-          gap: 16,
-        }}
-      >
-        {sorted.map((u, i) => {
-          const isMe = !!(me && u.name === me.name);
-          const total = u.completedTasks + u.inWorkTasks + u.failedTasks;
-          return (
-            <UserStatCard
-              key={u.id}
-              id={u.id}
-              name={u.name}
-              ava={u.ava ?? null}
-              completed={u.completedTasks}
-              inWork={u.inWorkTasks}
-              failed={u.failedTasks}
-              highlight={isMe}
-              rank={i + 1}
-              total={total}
+      {/* Контент */}
+      {!loading && !error && sorted.length > 0 && (
+        <>
+          {view === "cards" ? (
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+                gap: 16,
+              }}
+            >
+              {paginated.map((u, i) => {
+                const isMe = !!(me && u.name === me.name);
+                const total = u.completedTasks + u.inWorkTasks + u.failedTasks;
+                const rank = (currentPage - 1) * pageSize + i + 1;
+                return (
+                  <UserStatCard
+                    key={u.id}
+                    id={u.id}
+                    name={u.name}
+                    ava={u.ava ?? null}
+                    completed={u.completedTasks}
+                    inWork={u.inWorkTasks}
+                    failed={u.failedTasks}
+                    highlight={isMe}
+                    rank={rank}
+                    total={total}
+                  />
+                );
+              })}
+            </div>
+          ) : (
+            <UsersTable
+              data={paginated as UserStatistic[]}
+              sortMode={sortMode}
+              onSortChange={(m) => setSort(m)}
+              meName={me?.name || null}
+              pageRankOffset={(currentPage - 1) * pageSize}
             />
-          );
-        })}
-      </div>
+          )}
+
+          {/* Пагинация */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              gap: 8,
+              marginTop: 16,
+              alignItems: "center",
+            }}
+          >
+            <Button variant="secondary" onClick={() => setPage(1)} disabled={currentPage === 1}>
+              « Первая
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+            >
+              Назад
+            </Button>
+            <span style={{ opacity: 0.75 }}>
+              {currentPage} / {totalPages}
+            </span>
+            <Button
+              variant="secondary"
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+            >
+              Вперёд
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => setPage(totalPages)}
+              disabled={currentPage === totalPages}
+            >
+              Последняя »
+            </Button>
+          </div>
+        </>
+      )}
     </MainLayout>
   );
 }

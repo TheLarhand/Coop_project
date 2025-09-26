@@ -1,0 +1,33 @@
+.wrap {
+    display: grid;
+    grid-template-columns: repeat(8, minmax(160px, 1fr));
+    gap: 12px;
+    margin: 8px 0 12px;
+}
+
+.card {
+    border: 1px solid #e0e6e9;
+    border-radius: 10px;
+    padding: 10px 12px;
+    min-width: 160px;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.k {
+    font-size: 12px;
+    color: #6b7a85;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.v {
+    font-size: 18px;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

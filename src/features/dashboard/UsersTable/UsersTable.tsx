@@ -8,7 +8,7 @@ type Props = {
     sortMode: SortMode;
     onSortChange: (mode: SortMode) => void;
     meName: string | null;
-    pageRankOffset?: number; // для сквозной нумерации
+    pageRankOffset?: number;
 };
 
 const SORT_LABEL: Record<SortMode, string> = {
@@ -28,9 +28,7 @@ export default function UsersTable({
     meName,
     pageRankOffset = 0,
 }: Props) {
-    const toggle = (mode: SortMode) => {
-        onSortChange(mode);
-    };
+    const toggle = (mode: SortMode) => onSortChange(mode);
 
     return (
         <div className={s.wrap} aria-label="Таблица пользователей">
@@ -44,15 +42,11 @@ export default function UsersTable({
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th className={s.click} onClick={() => toggle("nameAsc")} aria-label="Сортировать по имени">
-                                Имя
-                            </th>
-                            <th>Выполнено</th>
-                            <th>В работе</th>
-                            <th>Просрочено</th>
-                            <th className={s.click} onClick={() => toggle("completedDesc")} aria-label="Сортировать по выполнено">
-                                Всего / %
-                            </th>
+                            <th className={s.click} onClick={() => toggle("nameAsc")} aria-label="Сортировать по имени">Имя</th>
+                            <th className={s.click} onClick={() => toggle("completedDesc")} aria-label="Сортировать по выполнено">Выполнено</th>
+                            <th className={s.click} onClick={() => toggle("inWorkDesc")} aria-label="Сортировать по в работе">В работе</th>
+                            <th className={s.click} onClick={() => toggle("failedDesc")} aria-label="Сортировать по просрочено">Просрочено</th>
+                            <th className={s.click} onClick={() => toggle("completedDesc")} aria-label="Сортировать по выполнено (итого)">Всего / %</th>
                             <th>Визуал</th>
                         </tr>
                     </thead>
@@ -76,15 +70,13 @@ export default function UsersTable({
                                                 if (img.src !== fallbackAva) img.src = fallbackAva;
                                             }}
                                         />
-                                        <span>{u.name}</span>
+                                        <span className={s.name}>{u.name}</span>
                                         {isMe && <i className={s.badge}>я</i>}
                                     </td>
                                     <td className={s.center}>{u.completedTasks}</td>
                                     <td className={s.center}>{u.inWorkTasks}</td>
                                     <td className={s.center}>{u.failedTasks}</td>
-                                    <td className={s.center}>
-                                        <b>{total}</b> / {doneRate}%
-                                    </td>
+                                    <td className={s.center}><b>{total}</b> / {doneRate}%</td>
                                     <td style={{ minWidth: 160 }}>
                                         <ChartBars completed={u.completedTasks} inWork={u.inWorkTasks} failed={u.failedTasks} />
                                     </td>
@@ -99,3 +91,4 @@ export default function UsersTable({
         </div>
     );
 }
+

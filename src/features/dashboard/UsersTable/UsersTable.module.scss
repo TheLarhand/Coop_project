@@ -1,27 +1,21 @@
-@use "../../../styles/abstracts/variables" as *;
-
 .wrap {
-    border: 1px solid $border-color;
-    border-radius: $radius-lg;
-    background: $bg-color;
-    box-shadow: $shadow-sm;
+    border: 1px solid #e8edf1;
+    border-radius: 10px;
+    background: #fff;
 }
 
 .head {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: $space-sm $space-md;
-    border-bottom: 1px dashed $border-color;
-
-    b {
-        font-size: $font-size-lg;
-    }
+    padding: 10px 12px;
+    border-bottom: 1px solid #eef2f5;
+    font-size: 14px;
 }
 
 .sortNote {
-    opacity: 0.7;
-    font-size: $font-size-sm;
+    color: #6b7a85;
+    font-size: 12px;
 }
 
 .scroller {
@@ -31,20 +25,29 @@
 .table {
     width: 100%;
     border-collapse: collapse;
+}
 
-    th,
-    td {
-        padding: $space-sm $space-md;
-        border-bottom: 1px solid $border-color;
-        vertical-align: middle;
-    }
+.table th,
+.table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #f0f3f6;
+    white-space: nowrap;
+}
 
-    thead th {
-        background: #f7fbfa;
-        position: sticky;
-        top: 0;
-        z-index: 1;
-    }
+.table thead th {
+    background: #fbfdff;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.click {
+    cursor: pointer;
+    user-select: none;
+}
+
+.center {
+    text-align: center;
 }
 
 .person {
@@ -56,38 +59,32 @@
 .ava {
     width: 28px;
     height: 28px;
-    border-radius: 6px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid #eef2f5;
 }
 
-.center {
-    text-align: center;
-}
-
-.click {
-    cursor: pointer;
-
-    &:hover {
-        text-decoration: underline;
-    }
-}
-
-.me {
-    outline: 2px solid $primary-color;
-    outline-offset: -2px;
-    background: rgba(26, 188, 156, 0.05);
+.name {
+    max-width: 240px;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .badge {
-    font-style: normal;
-    font-size: 10px;
-    background: $primary-color;
-    color: $text-color-inverse;
+    margin-left: 6px;
+    font-size: 11px;
+    background: #e8f5e9;
+    color: #1d7a36;
+    border: 1px solid #c9e6cd;
     padding: 2px 6px;
-    border-radius: 8px;
+    border-radius: 999px;
+}
+
+.me {
+    background: #fcfffc;
 }
 
 .empty {
-    padding: $space-md;
-    text-align: center;
-    opacity: 0.7;
+    padding: 14px;
+    color: #6b7a85;
 }

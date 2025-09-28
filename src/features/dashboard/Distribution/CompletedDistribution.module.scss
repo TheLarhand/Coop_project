@@ -1,0 +1,53 @@
+@use '../../../styles/abstracts/variables' as *;
+
+.wrap {
+    border: 1px solid $border-color;
+    background: $bg-color;
+    border-radius: $radius-lg;
+    padding: $space-sm $space-md;
+    box-shadow: $shadow-sm;
+    margin: 12px 0;
+}
+
+.title {
+    margin: 0 0 8px 0;
+}
+
+.list {
+    display: grid;
+    gap: 8px;
+}
+
+.item {
+    display: grid;
+    grid-template-columns: 1fr 6fr auto;
+    gap: 10px;
+    align-items: center;
+}
+
+.name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: $text-color;
+}
+
+.bar {
+    height: 8px;
+    background: #eef2f4;
+    border-radius: 999px;
+    border: 1px solid $border-color;
+    overflow: hidden;
+}
+
+.fill {
+    display: block;
+    height: 100%;
+    background: #22c55e;
+}
+
+.val {
+    min-width: 28px;
+    text-align: right;
+}

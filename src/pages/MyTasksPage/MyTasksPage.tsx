@@ -10,14 +10,13 @@ import TaskList from "../../features/MyTasks/TaskList/TaskList";
 import CompleteModal from "../../features/MyTasks/CompleteModal/CompleteModal";
 import s from "./MyTasksPage.module.scss";
 
-
 const MyTasksPage: React.FC = () => {
   const dispatch = useDispatch();
   const { items, loading, error } = useSelector((state: RootState) => state.myTasks);
   const statistics = useSelector(selectStatistics);
 
   const [page, setPage] = useState(1);
-  const pageSize = 6;
+  const pageSize = 20;
 
   // фильтры
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
@@ -44,20 +43,20 @@ const MyTasksPage: React.FC = () => {
     (statistics.my?.inWorkTasks ?? 0) +
     (statistics.my?.failedTasks ?? 0);
 
-  // утилита для проверки просрочки
-  const isExpired = (task: any) =>
-    task.status !== "completed" && new Date(task.deadline) < new Date();
+  // функция, которая возвращает фактический статус для фронта
+  const getFrontStatus = (task: any) => {
+    if (task.status === "completed") return "completed";
+    if (new Date(task.deadline) < new Date()) return "failed";
+    return "in work";
+  };
 
   // фильтрация
   const filteredItems = items.filter((task) => {
-    let ok = true;
+    const frontStatus = getFrontStatus(task);
 
-    if (statusFilter) {
-      if (statusFilter === "failed") {
-        if (!isExpired(task)) ok = false;
-      } else if (task.status !== statusFilter) {
-        ok = false;
-      }
+    let ok = true;
+    if (statusFilter && frontStatus !== statusFilter) {
+      ok = false;
     }
 
     if (deadlineFilter && new Date(task.deadline) > new Date(deadlineFilter)) {
@@ -66,6 +65,7 @@ const MyTasksPage: React.FC = () => {
 
     return ok;
   });
+
 
   const handleCompleteClick = (taskId: number) => {
     setCurrentTaskId(taskId);
@@ -113,7 +113,13 @@ const MyTasksPage: React.FC = () => {
         {loading && <p>Загрузка...</p>}
         {error && <p style={{ color: "red" }}>{error}</p>}
 
-        <TaskList tasks={filteredItems} onCompleteClick={handleCompleteClick} />
+        <TaskList
+          tasks={filteredItems.map((task) => ({
+            ...task,
+            status: getFrontStatus(task),
+          }))}
+          onCompleteClick={handleCompleteClick}
+        />
 
         <Pagination total={paginationTotal} page={page} pageSize={pageSize} onPageChange={setPage} />
 

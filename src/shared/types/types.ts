@@ -31,18 +31,17 @@ export interface MyStatistic {
 }
 
 export interface Task {
-    id: number;
-    title: string;
+    id: string;
+    name: string;
     description: string;
+    assigneeId: string;
     deadline: string;
-    status: "in work" | "completed" | "failed";
-    author: string;
-    result?: string;
+    creator: string;
 }
 
 export interface TaskCreatePayload {
-    title: string;
-    description: string;
-    performer: number;
-    deadline: string;
+  title: string;
+  description: string;
+  performer: number; 
+  deadline: string;
 }

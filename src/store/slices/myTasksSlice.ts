@@ -20,19 +20,28 @@ const initialState: MyTasksState = {
 /* --- Thunks --- */
 export const fetchMyTasks = createAsyncThunk<
   Task[],
-  { start: number; limit: number },
+  { start?: number; limit?: number } | undefined,
   { state: RootState; rejectValue: string }
->("myTasks/fetchAll", async ({ start, limit }, { getState, rejectWithValue }) => {
-  const { username, password, isAuthenticated } = getState().auth;
-  if (!isAuthenticated) return [];
-  try {
-    return await api.myTasksApi.getAll({ username, password, start, limit });
-  } catch (e: any) {
-    return rejectWithValue(
-      e?.response?.data?.detail || "Ошибка загрузки моих задач"
-    );
+>(
+  "myTasks/fetchAll",
+  async (params, { getState, rejectWithValue }) => {
+    const { username, password, isAuthenticated } = getState().auth;
+    if (!isAuthenticated) return [];
+
+    try {
+      return await api.myTasksApi.getAll({
+        username,
+        password,
+        start: params?.start,
+        limit: params?.limit,
+      });
+    } catch (e: any) {
+      return rejectWithValue(
+        e?.response?.data?.detail || "Ошибка загрузки моих задач"
+      );
+    }
   }
-});
+);
 
 export const completeMyTask = createAsyncThunk<
   Task,

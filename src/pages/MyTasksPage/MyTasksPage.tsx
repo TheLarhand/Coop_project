@@ -16,7 +16,7 @@ const MyTasksPage: React.FC = () => {
   const statistics = useSelector(selectStatistics);
 
   const [page, setPage] = useState(1);
-  const pageSize = 20;
+  const pageSize = 6;
 
   // фильтры
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
@@ -27,13 +27,12 @@ const MyTasksPage: React.FC = () => {
   const [currentTaskId, setCurrentTaskId] = useState<number | null>(null);
   const [comment, setComment] = useState("");
 
-  // загрузка задач
+  // загружаем все задачи один раз
   useEffect(() => {
-    const start = (page - 1) * pageSize;
-    dispatch(fetchMyTasks({ start, limit: pageSize }) as any);
-  }, [dispatch, page, pageSize]);
+    dispatch(fetchMyTasks({}) as any);
+  }, [dispatch]);
 
-  // загрузка статистики
+  // статистика
   useEffect(() => {
     dispatch(fetchMyStatistic() as any);
   }, [dispatch]);
@@ -43,8 +42,8 @@ const MyTasksPage: React.FC = () => {
     (statistics.my?.inWorkTasks ?? 0) +
     (statistics.my?.failedTasks ?? 0);
 
-  // функция, которая возвращает фактический статус для фронта
-  const getFrontStatus = (task: any) => {
+  // фронтовый статус
+  const getFrontStatus = (task: any): "completed" | "failed" | "in work" => {
     if (task.status === "completed") return "completed";
     if (new Date(task.deadline) < new Date()) return "failed";
     return "in work";
@@ -55,17 +54,19 @@ const MyTasksPage: React.FC = () => {
     const frontStatus = getFrontStatus(task);
 
     let ok = true;
-    if (statusFilter && frontStatus !== statusFilter) {
-      ok = false;
-    }
-
-    if (deadlineFilter && new Date(task.deadline) > new Date(deadlineFilter)) {
-      ok = false;
-    }
+    if (statusFilter && frontStatus !== statusFilter) ok = false;
+    if (deadlineFilter && new Date(task.deadline) > new Date(deadlineFilter)) ok = false;
 
     return ok;
   });
 
+  // пагинация на фронте
+  const paginatedItems = filteredItems
+    .map((task) => ({
+      ...task,
+      status: getFrontStatus(task),
+    }))
+    .slice((page - 1) * pageSize, page * pageSize);
 
   const handleCompleteClick = (taskId: number) => {
     setCurrentTaskId(taskId);
@@ -80,11 +81,8 @@ const MyTasksPage: React.FC = () => {
     setIsModalOpen(false);
   };
 
-  const paginationTotal =
-    statusFilter || deadlineFilter ? filteredItems.length : total;
-
   useEffect(() => {
-    setPage(1);
+    setPage(1); // сброс страницы при изменении фильтра
   }, [statusFilter, deadlineFilter]);
 
   return (
@@ -113,15 +111,14 @@ const MyTasksPage: React.FC = () => {
         {loading && <p>Загрузка...</p>}
         {error && <p style={{ color: "red" }}>{error}</p>}
 
-        <TaskList
-          tasks={filteredItems.map((task) => ({
-            ...task,
-            status: getFrontStatus(task),
-          }))}
-          onCompleteClick={handleCompleteClick}
-        />
+        <TaskList tasks={paginatedItems} onCompleteClick={handleCompleteClick} />
 
-        <Pagination total={paginationTotal} page={page} pageSize={pageSize} onPageChange={setPage} />
+        <Pagination
+          total={filteredItems.length}
+          page={page}
+          pageSize={pageSize}
+          onPageChange={setPage}
+        />
 
         <CompleteModal
           isOpen={isModalOpen}

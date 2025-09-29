@@ -67,13 +67,12 @@ export const myTasksApi = {
         password,
         start,
         limit,
-    }: Credentials & { start: number; limit: number }): Promise<Task[]> => {
+    }: Credentials & { start?: number; limit?: number }): Promise<Task[]> => {
         const res = await axios_api.get("/task-api/myTasks", {
             auth: { username, password },
             params: { start, limit },
         });
 
-        // маппинг taskId -> id, author (число) -> строка
         return res.data.map((t: any) => ({
             id: t.taskId,
             title: t.title,
@@ -121,20 +120,20 @@ export const checkAuth = async (creds: Credentials): Promise<void> => {
 // --- НОВОЕ: API для задач ---
 export const tasksApi = {
     createTask: async (taskData: TaskCreatePayload, creds?: Credentials): Promise<Task> => {
-    try {
-        const res = await axios_api.post<Task>(
-            "/task-api/createTask",
-            taskData,
-            {
-                auth: creds ? { username: creds.username, password: creds.password } : undefined,
-            }
-        );
-        return res.data;
-    } catch (err) {
-        console.error('API Error:', err);
-        throw err;
-    }
-},
+        try {
+            const res = await axios_api.post<Task>(
+                "/task-api/createTask",
+                taskData,
+                {
+                    auth: creds ? { username: creds.username, password: creds.password } : undefined,
+                }
+            );
+            return res.data;
+        } catch (err) {
+            console.error('API Error:', err);
+            throw err;
+        }
+    },
 };
 // --- КОНЕЦ НОВОГО ---
 

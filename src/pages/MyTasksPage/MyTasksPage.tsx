@@ -49,7 +49,7 @@ const MyTasksPage: React.FC = () => {
     return "in work";
   };
 
-  // фильтрация
+  //  фильтрация
   const filteredItems = items.filter((task) => {
     const frontStatus = getFrontStatus(task);
 

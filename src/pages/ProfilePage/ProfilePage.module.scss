@@ -9,6 +9,7 @@
   border-radius: $radius-lg;
   box-shadow: $shadow-md;
   overflow: hidden;
+  animation: appearUp .28s ease both;
 }
 
 .cover {
@@ -67,8 +68,10 @@
   margin-top: 40px;
 
   button {
+    transition: transform 0.30s;
     &:hover {
       cursor: pointer;
+      transform: translateY(-6px);
     }
   }
 }
@@ -110,10 +113,107 @@
   margin-top: $space-sm;
 }
 
-.centered {
+.authContainer {
   width: 100%;
   display: flex;
   justify-content: center;
+  padding: $space-lg 0;
+
+  .authCard {
+    display: flex;
+    align-items: center;
+    gap: $space-lg;
+    width: min(880px, 100%);
+    max-width: $breakpoint-lg;
+    background: linear-gradient(180deg, rgba($color-white, 0.98), $bg-color);
+    border: 1px solid $border-color;
+    border-radius: $radius-lg;
+    padding: $space-lg;
+    box-shadow: $shadow-lg;
+    transition: transform .22s ease, box-shadow .22s ease;
+    animation: appearUp .28s ease both;
+
+    &:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 8px 26px rgba(0,0,0,0.12);
+    }
+
+    .art {
+      flex: 0 0 88px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      img {
+        width: 88px;
+        height: 88px;
+        color: $primary-color;
+        filter: drop-shadow(0 4px 10px rgba(0,0,0,0.06));
+        border-radius: 50%;
+        box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.35);
+      }
+    }
+
+    .authBody {
+      flex: 1;
+      min-width: 0;
+
+      .authTitle {
+        margin: 0 0 6px;
+        font-size: $font-size-xl;
+        color: $text-color;
+      }
+
+      .authSubtitle {
+        margin: 0 0 $space-sm;
+        color: $text-color-light;
+        font-size: $font-size-md;
+      }
+
+      .actionsRow {
+        display: flex;
+        gap: $space-sm;
+        align-items: center;
+        margin-top: $space-sm;
+
+        .authButton {
+          padding: $space-sm $space-md;
+          font-size: $font-size-md;
+          border-radius: $radius-md;
+          box-shadow: $shadow-sm;
+        }
+      }
+
+      .smallHint {
+        margin-top: $space-sm;
+        font-size: $font-size-sm;
+        color: $text-color-light;
+
+        .linkLike {
+          background: none;
+          border: none;
+          color: $primary-color;
+          cursor: pointer;
+          padding: 0;
+          font-weight: 600;
+          transition: transform 0.35s;
+
+          &:hover {
+            transform: translateY(-3px);
+          }
+        }
+      }
+    }
+  }
+}
+
+@keyframes appearUp {
+  from { opacity: 0; transform: translateY(8px) scale(.995); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+button:focus-visible, .authCard button:focus-visible {
+  outline: 3px solid color-mix(in srgb, $primary-color 20%, $color-white);
+  outline-offset: 3px;
 }
 
 .avatarPreview {
@@ -164,22 +264,85 @@
   box-shadow: $shadow-sm;
   transition: filter .2s ease, transform .1s ease;
 
-  &:hover { filter: brightness(1.1); cursor: pointer; }
-  &:active { transform: scale(.98); }
+  &:hover {
+    transition: transform 0.25s;
+    filter: brightness(1.1);
+    cursor: pointer;
+    transform: translateY(-7px);
+  }
+
+  &:active {
+    transform: scale(.98);
+  }
+}
+
+.authButton, .modalBtn, .updBtn {
+  transition: transform 0.35s;
+  &:hover {
+    transform: translateY(-5px);
+  }
+}
+
+.error {
+  color: #bc0000;
+  font-size: $font-size-lg;
+  position: relative;
+  justify-self: center;
+  top: 35vh;
+  text-align: center;
+  font-weight: 600;
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  position: relative;
+  justify-self: center;
+  top: 25vh;
+
+ .loading {
+    font-size: $font-size-xl;
+    font-weight: 500;
+  }
+
+  .donut {
+    width: 32px;
+    height: 32px;
+    border: 5px solid transparent;
+    border-top: 5px solid #3498db;
+    border-radius: 50%;
+    animation: donutAnim 1.5s linear infinite;
+  }
+}
+
+@keyframes donutAnim {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 @media (max-width: $breakpoint-md) {
-  .profileCard { width: 100%; }
-  .header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: $space-sm;
-  }
-  .actions {
-    width: 100%;
-    justify-content: flex-start;
-  }
-  .kpis {
-    grid-template-columns: 1fr;
+  .authContainer {
+    padding: $space-md 12px;
+    .authCard {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+
+      .art { margin-top: -12px; }
+      .authBody {
+        .actionsRow {
+          justify-content: center;
+          flex-wrap: wrap;
+        }
+      }
+    }
   }
 }

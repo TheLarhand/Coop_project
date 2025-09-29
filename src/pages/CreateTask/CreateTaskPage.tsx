@@ -11,6 +11,7 @@ import type { AppDispatch } from '../../store/store';
 import { fetchProfile, selectProfile } from "../../store/slices/profileSlice";
 import Select from "../../shared/ui/Select/Select";
 import type { TaskCreatePayload } from "../../shared/types/types";
+import {selectIsAuthenticated} from "../../store/slices/authSlice.ts";
 
 
 function CreateTaskPage() {
@@ -19,6 +20,7 @@ function CreateTaskPage() {
   const profile = useSelector(selectProfile)
   const isLoading = useSelector(selectUsersLoading);
   const error = useSelector(selectUsersError);
+  const didAuth = useSelector(selectIsAuthenticated);
 
   const [taskName, setTaskName] = useState('')
   const [taskDiscription, setTaskDiscription] = useState('')
@@ -30,8 +32,12 @@ function CreateTaskPage() {
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    dispatch(fetchUsers());
-    dispatch(fetchProfile());
+      (async () => {
+          if (didAuth) {
+              await dispatch(fetchUsers());
+              await dispatch(fetchProfile());
+          }
+      })()
   }, [dispatch]);
 
   const assigneeOptions = users.map(user => ({
@@ -135,7 +141,7 @@ function CreateTaskPage() {
             </div>
 
             <div className={s.buttonContainer}>
-              <Button type="submit" variant="primary">Добавить задачу</Button>
+              <Button type="submit" variant="primary" disabled={!didAuth}>Добавить задачу</Button>
               <Button type="button" onClick={clearBtn} variant="primary">Очистить поля</Button>
             </div>
 

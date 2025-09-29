@@ -75,8 +75,8 @@ const ProfilePage: React.FC = () => {
             }
             try {
                 await dispatch(login({ username: userName.trim(), password: password.trim() })).unwrap();
-                clearModal();
                 await dispatch(fetchProfile()).unwrap();
+                clearModal();
                 return;
             } catch (error: any) {
                 console.error(error);
@@ -86,8 +86,8 @@ const ProfilePage: React.FC = () => {
         }
         try {
             await dispatch(login({ username: userName.trim(), password: password.trim() })).unwrap();
-            clearModal();
             await dispatch(fetchProfile()).unwrap();
+            clearModal();
         } catch (error) {
             console.error(error);
             setModalError(error as any);
@@ -150,22 +150,22 @@ const ProfilePage: React.FC = () => {
                     modalError={modalError}
                     render={() => (
                         <>
-                            <h2 className={s.formContainer__form__title}>{ didAuth ? 'Форма смены аккаунта' : 'Форма авторизации' }</h2>
+                            <h2 className={s.formContainer__form__title}>{ didAuth ? 'Change Account Form' : 'Auth Form' }</h2>
                             <Input
-                                placeholder="логин"
+                                placeholder="username"
                                 type="text"
                                 value={userName}
                                 required={true}
                                 onChange={(e) => setUserName(e.target.value)}
                             />
                             <Input
-                                placeholder="пароль"
+                                placeholder="password"
                                 type="password"
                                 value={password}
                                 required={true}
                                 onChange={(e) => setPassword(e.target.value)}
                             />
-                            <Button className={s.modalBtn} type={"submit"}>{ didAuth ? 'Сменить аккаунт' : 'Авторизоваться' }</Button>
+                            <Button type={"submit"}>{ didAuth ? 'Change Account' : 'Auth' }</Button>
                         </>
                     )}
                 />
@@ -192,7 +192,7 @@ const ProfilePage: React.FC = () => {
                             )}
 
                             <Input
-                                placeholder="имя"
+                                placeholder="name"
                                 type="text"
                                 value={userName}
                                 required={true}
@@ -211,24 +211,14 @@ const ProfilePage: React.FC = () => {
                                 <label htmlFor="avatarInput" className={s.fileBtn}>Загрузить аватар</label>
                             </div>
 
-                            <Button className={s.updBtn} type={"submit"}>Обновить профиль</Button>
+                            <Button type={"submit"}>Update Profile</Button>
                         </>
                     )}
                 />
             )}
 
-            {error && (
-                <div className={s.error}>
-                    Произошла ошибка<br />{error}
-                </div>
-            )}
-
-            {loading && !error && (
-                <div className={s.loadingContainer}>
-                    <div className={s.loading}>Загрузка профиля...</div>
-                    <div className={s.donut}></div>
-                </div>
-            )}
+            {error && <div>Произошла ошибка: {error}</div>}
+            {loading && !error && <div>Загрузка профиля...</div>}
 
             {didAuth && profile && !loading && !error && (
                 <section className={s.profileCard}>
@@ -244,9 +234,9 @@ const ProfilePage: React.FC = () => {
                         </div>
 
                         <div className={s.actions}>
-                            <Button type="button" onClick={() => toggleModal()}>Сменить профиль</Button>
-                            <Button type="button" onClick={() => toggleModal(true)}>Обновить профиль</Button>
-                            <Button type="button" variant="danger" onClick={handleLogOut}>Выйти</Button>
+                            <Button type="button" onClick={() => toggleModal()}>Change profile</Button>
+                            <Button type="button" onClick={() => toggleModal(true)}>Update profile</Button>
+                            <Button type="button" variant="danger" onClick={handleLogOut}>Log Out</Button>
                         </div>
                     </div>
 
@@ -285,25 +275,8 @@ const ProfilePage: React.FC = () => {
             )}
 
             {!didAuth && (
-                <div className={s.authContainer} role="region" aria-label="Авторизация">
-                    <div className={s.authCard}>
-                        <div className={s.art}>
-                            <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png" alt="avatar" loading="lazy"/>
-                        </div>
-
-                        <div className={s.authBody}>
-                            <h3 className={s.authTitle}>Войдите, чтобы увидеть профиль</h3>
-                            <p className={s.authSubtitle}>Доступ к личной статистике, настройкам и сохранённым данным.</p>
-
-                            <div className={s.actionsRow}>
-                                <Button className={s.authButton} type="button" onClick={() => toggleModal()}>Авторизоваться</Button>
-                            </div>
-
-                            <p className={s.smallHint}>
-                                Нет аккаунта? <button className={s.linkLike} aria-label="Зарегистрироваться">Зарегистрируйтесь</button> (тут могла бы быть регистрация)
-                            </p>
-                        </div>
-                    </div>
+                <div className={s.centered}>
+                    <Button type="button" onClick={() => toggleModal()}>Auth</Button>
                 </div>
             )}
         </MainLayout>

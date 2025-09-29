@@ -4,11 +4,6 @@ import Button from "../shared/ui/Button/Button";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../store/store";
 
-// новые импорты
-import TrendsPanel from "../features/dashboard/Trends/TrendsPanel";
-import CompletedDistribution from "../features/dashboard/Distribution/CompletedDistribution";
-
-
 import {
   fetchGlobalStatistic,
   fetchMyStatistic,
@@ -24,11 +19,6 @@ import ChartDonut from "../shared/ui/ChartDonut/ChartDonut";
 import UserStatCard from "../features/dashboard/UserStatCard/UserStatCard";
 import UsersTable from "../features/dashboard/UsersTable/UsersTable";
 import StatsHeader from "../features/dashboard/StatsHeader/StatsHeader";
-import WeeklyDelta from "../features/dashboard/WeeklyDelta/WeeklyDelta";
-
-// ⬇️ добавлено
-import MyRankBadge from "../features/dashboard/MyRankBadge/MyRankBadge";
-import Podium from "../features/dashboard/Podium/Podium";
 
 import { exportUsersStatToCSV } from "../shared/utils/csv";
 import { exportUsersStatToXLSX } from "../shared/utils/xlsxExport";
@@ -108,26 +98,15 @@ export default function StatisticPage() {
   };
   const handleExportJSONAll = () => exportUsersStatToJSON(sorted);
   const handleCopyTSV = async () => {
-    try {
-      await copyUsersStatToClipboardTSV(sorted);
-      setCopyOk("Скопировано в буфер!");
-      window.setTimeout(() => setCopyOk(null), 1500);
-    } catch (err: unknown) {
-      alert(err instanceof Error ? err.message : "Не удалось скопировать в буфер.");
-      console.error(err);
-    }
+    try { await copyUsersStatToClipboardTSV(sorted); setCopyOk("Скопировано в буфер!"); window.setTimeout(() => setCopyOk(null), 1500); }
+    catch (err: unknown) { alert(err instanceof Error ? err.message : "Не удалось скопировать в буфер."); console.error(err); }
   };
   const handleResetView = () => {
     localStorage.removeItem("dashboard:view");
     localStorage.removeItem("dashboard:query");
     localStorage.removeItem("dashboard:lastVisit");
-    localStorage.removeItem("dashboard:lastSnapshot"); // очистка снапшота WeeklyDelta
     localStorage.removeItem("dashboard:sortMode");
     setView("cards"); setQuery(""); setPage(1);
-  };
-
-  const handleClearTrends = () => {
-    localStorage.removeItem("dashboard:history:v1");
   };
 
   // UI
@@ -135,7 +114,7 @@ export default function StatisticPage() {
     <MainLayout>
       <h1>Дашборд</h1>
 
-      {/* KPI-плашки */}
+      {/* KPI-плашки (в одну линию, без налезаний) */}
       <StatsHeader
         total={kpis.total}
         completed={kpis.completed}
@@ -146,14 +125,6 @@ export default function StatisticPage() {
         topName={kpis.top?.name ?? null}
         antiName={kpis.anti?.name ?? null}
       />
-
-      {/* динамика с последнего визита */}
-      <WeeklyDelta />
-
-      {/* подиум Top-3 */}
-      <div style={{ margin: "8px 0 14px" }}>
-        <Podium />
-      </div>
 
       {lastVisit && (
         <div style={{ opacity: 0.7, marginTop: 4 }}>
@@ -172,10 +143,7 @@ export default function StatisticPage() {
         <Button variant="secondary" onClick={() => setSort("inWorkDesc")}>По «в работе» ↓</Button>
         <Button variant="secondary" onClick={() => setSort("nameAsc")}>По имени A→Z</Button>
 
-        <div style={{ marginLeft: "auto", display: "flex", gap: 8, alignItems: "center" }}>
-          {/* ⬇️ бейдж «моя позиция» */}
-          <MyRankBadge />
-
+        <div style={{ marginLeft: "auto", display: "flex", gap: 8 }}>
           <input
             placeholder="Поиск по имени…"
             value={query}
@@ -189,7 +157,6 @@ export default function StatisticPage() {
           <Button variant="secondary" onClick={handleExportJSONAll}>JSON</Button>
           <Button variant="secondary" onClick={handleCopyTSV}>Копировать TSV</Button>
           <Button variant="secondary" onClick={handleResetView}>Сбросить вид</Button>
-          <Button variant="secondary" onClick={handleClearTrends}>Очистить тренды</Button>
         </div>
       </div>
 
@@ -198,9 +165,9 @@ export default function StatisticPage() {
         <span>Найдено пользователей: <b>{total}</b></span>
         <span style={{ borderLeft: "1px solid #ddd", height: 16 }} />
         <span>Показывать: </span>
-        <Button variant={pageSize === 1 ? "primary" : "secondary"} onClick={() => { setPageSize(1); setPage(1); }}>Топ 1</Button>
-        <Button variant={pageSize === 3 ? "primary" : "secondary"} onClick={() => { setPageSize(3); setPage(1); }}>Топ 3</Button>
-        <Button variant={pageSize === 5 ? "primary" : "secondary"} onClick={() => { setPageSize(5); setPage(1); }}>Топ 5</Button>
+        <Button variant={pageSize === 10 ? "primary" : "secondary"} onClick={() => { setPageSize(10); setPage(1); }}>Top 10</Button>
+        <Button variant={pageSize === 12 ? "primary" : "secondary"} onClick={() => { setPageSize(12); setPage(1); }}>12</Button>
+        <Button variant={pageSize === 50 ? "primary" : "secondary"} onClick={() => { setPageSize(50); setPage(1); }}>50</Button>
         {copyOk && <span style={{ color: "#27ae60" }}>{copyOk}</span>}
       </div>
 
@@ -209,7 +176,7 @@ export default function StatisticPage() {
 
       {/* Глобальная сводка */}
       {!loading && !error && (
-        <section aria-label="Глобальная сводка" style={{ margin: "12px 0 12px" }}>
+        <section aria-label="Глобальная сводка" style={{ margin: "12px 0 20px" }}>
           <h3 style={{ margin: "6px 0" }}>Глобальная сводка</h3>
           <ChartDonut
             completed={globalTotals.completed}
@@ -221,12 +188,6 @@ export default function StatisticPage() {
         </section>
       )}
 
-      {/* НОВОЕ: тренды по визитам */}
-      <TrendsPanel />
-
-      {/* НОВОЕ: распределение по выполненным */}
-      <CompletedDistribution />
-
       {/* Контент */}
       {!loading && !error && sorted.length === 0 && (
         <div style={{ opacity: 0.7, marginTop: 12 }}>
@@ -237,19 +198,11 @@ export default function StatisticPage() {
       {!loading && !error && sorted.length > 0 && (
         <>
           {view === "cards" ? (
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(5, minmax(0, 1fr))", // было auto-fill
-                gap: 16
-              }}
-            >
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 16 }}>
               {paginated.map((u, i) => {
                 const isMe = !!(me && u.name === me.name);
                 const totalRow = u.completedTasks + u.inWorkTasks + u.failedTasks;
                 const rank = (currentPage - 1) * pageSize + i + 1;
-                const isTop = kpis.top?.id === u.id; // топ-1 по выполненным
-
                 return (
                   <UserStatCard
                     key={u.id}
@@ -260,7 +213,6 @@ export default function StatisticPage() {
                     inWork={u.inWorkTasks}
                     failed={u.failedTasks}
                     highlight={isMe}
-                    top={isTop}          // ⬅ добавил
                     rank={rank}
                     total={totalRow}
                   />
@@ -290,5 +242,3 @@ export default function StatisticPage() {
     </MainLayout>
   );
 }
-
-

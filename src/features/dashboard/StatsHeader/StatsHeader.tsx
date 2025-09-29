@@ -19,7 +19,8 @@ export default function StatsHeader({
         { k: "Выполнено", v: completed },
         { k: "В работе", v: inWork },
         { k: "Просрочено", v: failed },
-        { k: "Готово (%)", v: `${doneRate}%` },
+        // только текстовая правка, логика не менялась
+        { k: "Доля выполненных", v: `${doneRate}%` },
         { k: "Выполнено / чел", v: avgCompletedPerUser.toFixed(1) },
         { k: "Топ исполнитель", v: topName || "—" },
         { k: "Анти-лидер", v: antiName || "—" },
@@ -36,4 +37,3 @@ export default function StatsHeader({
         </section>
     );
 }
-

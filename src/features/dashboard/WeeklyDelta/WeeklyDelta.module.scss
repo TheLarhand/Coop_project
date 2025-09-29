@@ -1,0 +1,65 @@
+@use '../../../styles/abstracts/variables' as *;
+
+.wrap {
+    margin: 6px 0 10px;
+    background: $bg-color;
+    border: 1px solid $border-color;
+    border-radius: $radius-lg;
+    padding: $space-sm $space-md;
+    box-shadow: $shadow-sm;
+}
+
+.title {
+    margin: 0 0 6px 0;
+    font-size: $font-size-lg;
+    color: $text-color;
+}
+
+.row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(140px, 1fr));
+    gap: 8px;
+    padding: 0;
+    margin: 0 0 4px 0;
+    list-style: none;
+}
+
+.item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px dashed $border-color;
+    border-radius: $radius-md;
+    padding: 6px 10px;
+    min-width: 0;
+}
+
+.k {
+    font-size: $font-size-sm;
+    color: $text-color-light;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.v {
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.up {
+    color: #22c55e;
+}
+
+/* зелёный */
+.down {
+    color: #ef4444;
+}
+
+/* красный */
+
+.hint {
+    display: inline-block;
+    opacity: .6;
+    font-size: $font-size-sm;
+}

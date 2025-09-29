@@ -6,31 +6,47 @@
     border-radius: $radius-lg;
     padding: $space-md;
     box-shadow: $shadow-sm;
+    transition: box-shadow .15s ease, transform .15s ease, border-color .15s ease;
 }
 
 .head {
     display: flex;
     align-items: center;
-    gap: $space-sm;
-    margin-bottom: $space-sm;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.avaWrap {
+    position: relative;
+    flex: 0 0 auto;
 }
 
 .ava {
     border-radius: $radius-md;
+    display: block;
+}
+
+.crown {
+    position: absolute;
+    right: -8px;
+    top: -10px;
+    font-size: 18px;
+    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .2));
+}
+
+.titleBox {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    gap: 4px;
 }
 
 .name {
     color: $text-color;
     font-size: $font-size-lg;
-}
-
-.list {
-    margin: 0 0 $space-sm 0;
-    padding-left: $space-md;
-
-    li {
-        color: $text-color;
-    }
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .meta {
@@ -38,8 +54,33 @@
     font-size: $font-size-sm;
 }
 
+.badgesRow {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 2px;
+}
+
+.list {
+    margin: 6px 0 $space-sm 0;
+    padding-left: $space-md;
+
+    li {
+        color: $text-color;
+    }
+}
+
+/* подсветка «я» */
 .highlight {
     outline: 2px solid $primary-color;
     box-shadow: 0 0 0 4px rgba(26, 188, 156, 0.15);
     border-radius: $radius-lg;
+}
+
+/* подсветка «топ-1» */
+.top {
+    border-color: #f1c40f;
+    box-shadow:
+        0 0 0 2px rgba(241, 196, 15, 0.20) inset,
+        0 6px 14px rgba(241, 196, 15, 0.12);
 }

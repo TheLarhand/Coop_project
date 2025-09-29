@@ -1,90 +1,129 @@
-.wrap {
-    border: 1px solid #e8edf1;
-    border-radius: 10px;
-    background: #fff;
+@use '../../../styles/abstracts/variables' as *;
+
+/* Контейнер и подсказка сортировки */
+.tableWrap {
+    margin: 8px 0 16px;
 }
 
-.head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 12px;
-    border-bottom: 1px solid #eef2f5;
-    font-size: 14px;
+.sortHint {
+    text-align: right;
+    font-size: $font-size-sm;
+    opacity: .7;
+    margin-bottom: 6px;
 }
 
-.sortNote {
-    color: #6b7a85;
-    font-size: 12px;
-}
-
-.scroller {
-    overflow: auto;
-}
-
+/* Таблица */
 .table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0 8px;
+
+    thead th {
+        text-align: left;
+        font-weight: 600;
+        padding: 8px 10px;
+        opacity: .8;
+        background: #fbfdff;
+        position: sticky;
+        top: 0;
+        z-index: 1;
+    }
+
+    tbody td {
+        background: $bg-color;
+        border: 1px solid $border-color;
+        padding: 10px;
+        vertical-align: middle;
+    }
+
+    tbody tr {
+        box-shadow: $shadow-sm;
+    }
 }
 
-.table th,
-.table td {
-    padding: 10px 12px;
-    border-bottom: 1px solid #f0f3f6;
-    white-space: nowrap;
+/* Подсветка своей строки */
+.meRow td {
+    box-shadow: 0 0 0 2px rgba(26, 188, 156, .12) inset;
 }
 
-.table thead th {
-    background: #fbfdff;
-    position: sticky;
-    top: 0;
-    z-index: 1;
+/* Колонки фиксированной ширины */
+.colNum {
+    width: 52px;
+    text-align: center !important;
 }
 
-.click {
-    cursor: pointer;
-    user-select: none;
+.colBar {
+    width: 260px;
+    /* было 240 */
 }
 
-.center {
-    text-align: center;
-}
-
-.person {
+/* Ячейка «Имя» с аватаром и бейджами */
+.userCell {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
+    /* было 10 */
+    min-width: 260px;
+    /* запас под 44px аватар + бейджи */
 }
 
 .ava {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
+    width: 44px;
+    /* было 36 */
+    height: 44px;
+    /* было 36 */
+    border-radius: $radius-md;
     object-fit: cover;
-    border: 1px solid #eef2f5;
+    flex: 0 0 auto;
+    border: 1px solid $border-color;
+}
+
+.nameBox {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
 }
 
 .name {
-    max-width: 240px;
+    color: $text-color;
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-.badge {
-    margin-left: 6px;
-    font-size: 11px;
-    background: #e8f5e9;
-    color: #1d7a36;
-    border: 1px solid #c9e6cd;
-    padding: 2px 6px;
+.badges {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+/* Прогресс-бар в последней колонке */
+.bar {
+    width: 100%;
+    height: 8px;
+    background: #eef2f4;
     border-radius: 999px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid $border-color;
 }
 
-.me {
-    background: #fcfffc;
+.barFill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 0%;
+    background: #f39c12;
 }
 
-.empty {
-    padding: 14px;
-    color: #6b7a85;
+/* Кликабельные заголовки */
+.sortable {
+    cursor: pointer;
+    user-select: none;
+}
+
+.sortable:hover {
+    text-decoration: underline;
 }

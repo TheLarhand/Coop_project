@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import TestPage from './pages/TestPage';
 import StatisticPage from './pages/StatisticPage';
 import MyTasksPage from './pages/MyTasksPage';
-import DelegatedTasksPage from './pages/DelegatedTasksPage';
+import DelegatedTasksPage from './pages/DelegatedTasks/DelegatedTasksPage';
 import CreateTaskPage from './pages/CreateTask/CreateTaskPage';
 import ProfilePage from './pages/ProfilePage/ProfilePage';
 

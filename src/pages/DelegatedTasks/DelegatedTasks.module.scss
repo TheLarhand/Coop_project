@@ -1,0 +1,131 @@
+@use "../../styles/abstracts/variables" as *; 
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: $space-lg;
+}
+
+.heading {
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: $space-lg;
+  text-align: center;
+  color: $text-color;
+}
+
+.error {
+  color: $danger-color;
+  margin: $space-sm 0;
+  text-align: center;
+}
+
+.taskList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.taskCard {
+  background: $bg-color;
+  border: 1px solid $border-color;
+  border-radius: $radius-lg;
+  padding: $space-md;
+  margin-bottom: $space-md;
+  box-shadow: $shadow-sm;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+ 
+
+  h3 {
+    font-size: $font-size-xl;
+    margin-bottom: $space-xs;
+    color: $primary-color;
+  }
+
+  p {
+    margin: 4px 0;
+    font-size: $font-size-md;
+    color: $text-color-light;
+  }
+}
+
+.buttons {
+  margin-top: $space-sm;
+  display: flex;
+  gap: $space-sm;
+}
+
+.editFormWrapper {
+  margin-top: $space-lg;
+  padding: $space-md;
+  border-radius: $radius-lg;
+  background: $color-grey-1;
+  border: 1px solid $border-color;
+
+  h2 {
+    margin-bottom: $space-md;
+    font-size: $font-size-xl;
+    text-align: center;
+    color: $secondary-color;
+  }
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+
+  label {
+    font-weight: 500;
+    margin-bottom: $space-xs;
+    color: $text-color;
+  }
+
+  input,
+  textarea {
+    border: 1px solid $border-color;
+    border-radius: $radius-md;
+    padding: $space-sm;
+    font-size: $font-size-md;
+    color: $text-color;
+    background: $bg-color;
+
+    &:focus {
+      border-color: $primary-color;
+      outline: none;
+    }
+  }
+}
+
+.buttonContainer {
+  display: flex;
+  justify-content: flex-end;
+  gap: $space-sm;
+}
+
+.performer {
+  display: flex;
+  align-items: center;
+  margin-top: 0.5rem;
+  gap: 0.5rem;
+
+  span {
+    font-weight: 500;
+    font-size: 0.95rem;
+    color: #333;
+  }
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ddd;
+}

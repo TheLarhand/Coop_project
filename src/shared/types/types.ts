@@ -37,6 +37,11 @@ export interface Task {
     assigneeId: string;
     deadline: string;
     creator: string;
+    status: "in work" | "completed" | "failed";
+    author: string;
+    result?: string;
+    performer: number;
+
 }
 
 export interface TaskCreatePayload {
@@ -45,3 +50,5 @@ export interface TaskCreatePayload {
   performer: number; 
   deadline: string;
 }
+
+

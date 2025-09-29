@@ -1,0 +1,38 @@
+@use "../styles/abstracts/variables" as *;
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 10px;
+    margin: 10px 0 6px;
+}
+
+.card {
+    background: $bg-color;
+    border: 1px solid $border-color;
+    border-radius: $radius-lg;
+    padding: 10px 12px;
+    box-shadow: $shadow-sm;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0; // важно для text-overflow
+}
+
+.label {
+    font-size: 12px;
+    opacity: 0.7;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.value {
+    font-weight: 700;
+    // шрифт подгоняем без перелома и без налезания на границы
+    font-size: clamp(18px, 2.2vw, 22px);
+    line-height: 1.1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

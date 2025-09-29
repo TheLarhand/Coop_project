@@ -1,0 +1,90 @@
+.wrap {
+    border: 1px solid #e8edf1;
+    border-radius: 10px;
+    background: #fff;
+}
+
+.head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    border-bottom: 1px solid #eef2f5;
+    font-size: 14px;
+}
+
+.sortNote {
+    color: #6b7a85;
+    font-size: 12px;
+}
+
+.scroller {
+    overflow: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th,
+.table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #f0f3f6;
+    white-space: nowrap;
+}
+
+.table thead th {
+    background: #fbfdff;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.click {
+    cursor: pointer;
+    user-select: none;
+}
+
+.center {
+    text-align: center;
+}
+
+.person {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ava {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid #eef2f5;
+}
+
+.name {
+    max-width: 240px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.badge {
+    margin-left: 6px;
+    font-size: 11px;
+    background: #e8f5e9;
+    color: #1d7a36;
+    border: 1px solid #c9e6cd;
+    padding: 2px 6px;
+    border-radius: 999px;
+}
+
+.me {
+    background: #fcfffc;
+}
+
+.empty {
+    padding: 14px;
+    color: #6b7a85;
+}

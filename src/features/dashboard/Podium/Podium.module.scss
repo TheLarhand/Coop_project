@@ -1,0 +1,64 @@
+@use '../../../styles/abstracts/variables' as *;
+
+.wrap {
+    border: 1px solid $border-color;
+    background: $bg-color;
+    border-radius: $radius-lg;
+    padding: $space-sm $space-md;
+    box-shadow: $shadow-sm;
+}
+
+.title {
+    margin: 0 0 8px 0;
+}
+
+.podium {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(160px, 1fr));
+    gap: 10px;
+}
+
+.place {
+    position: relative;
+    border-radius: $radius-md;
+    padding: 10px;
+    text-align: center;
+    border: 1px dashed $border-color;
+    background: #fbfdff;
+    display: grid;
+    gap: 6px;
+}
+
+.first {
+    border-color: $primary-color;
+    box-shadow: 0 0 0 2px rgba(26, 188, 156, .12) inset;
+}
+
+.second {
+    opacity: .95;
+}
+
+.third {
+    opacity: .9;
+}
+
+.score {
+    font-size: 22px;
+}
+
+.name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.badge {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    font-size: 11px;
+    background: $color-grey-1;
+    border: 1px solid $border-color;
+    padding: 1px 6px;
+    border-radius: 999px;
+}

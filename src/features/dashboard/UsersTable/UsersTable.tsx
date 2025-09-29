@@ -1,25 +1,21 @@
 import s from "./UsersTable.module.scss";
-import type { SortMode } from "../../../store/slices/statisticsSlice";
+import DoneRateBadge from "../DoneRateBadge/DoneRateBadge";
+import OverdueBadge from "../OverdueBadge/OverdueBadge";
+
 import type { UserStatistic } from "../../../shared/types/types";
-import ChartBars from "../../../shared/ui/ChartBars/ChartBars";
+import type { SortMode } from "../../../store/slices/statisticsSlice";
 
 type Props = {
     data: UserStatistic[];
     sortMode: SortMode;
-    onSortChange: (mode: SortMode) => void;
+    onSortChange: (m: SortMode) => void;
     meName: string | null;
     pageRankOffset?: number;
 };
 
-const SORT_LABEL: Record<SortMode, string> = {
-    nameAsc: "Имя (A→Z)",
-    completedDesc: "Выполнено ↓",
-    failedDesc: "Просрочено ↓",
-    inWorkDesc: "В работе ↓",
-};
-
+// увеличенный фоллбек-аватар 44x44
 const fallbackAva =
-    "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='28' height='28'><rect width='100%' height='100%' fill='%23ecf0f1'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-size='12' fill='%23999'>?</text></svg>";
+    "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='44' height='44'><rect width='100%' height='100%' rx='8' ry='8' fill='%23ecf0f1'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-size='10' fill='%23999'>no img</text></svg>";
 
 export default function UsersTable({
     data,
@@ -28,67 +24,106 @@ export default function UsersTable({
     meName,
     pageRankOffset = 0,
 }: Props) {
-    const toggle = (mode: SortMode) => onSortChange(mode);
-
     return (
-        <div className={s.wrap} aria-label="Таблица пользователей">
-            <div className={s.head}>
-                <b>Пользователи</b>
-                <span className={s.sortNote}>Сортировка: {SORT_LABEL[sortMode]}</span>
-            </div>
+        <div className={s.tableWrap}>
+            <div className={s.sortHint}>Сортировка: {humanSort(sortMode)} ↓</div>
 
-            <div className={s.scroller}>
-                <table className={s.table}>
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th className={s.click} onClick={() => toggle("nameAsc")} aria-label="Сортировать по имени">Имя</th>
-                            <th className={s.click} onClick={() => toggle("completedDesc")} aria-label="Сортировать по выполнено">Выполнено</th>
-                            <th className={s.click} onClick={() => toggle("inWorkDesc")} aria-label="Сортировать по в работе">В работе</th>
-                            <th className={s.click} onClick={() => toggle("failedDesc")} aria-label="Сортировать по просрочено">Просрочено</th>
-                            <th className={s.click} onClick={() => toggle("completedDesc")} aria-label="Сортировать по выполнено (итого)">Всего / %</th>
-                            <th>Визуал</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {data.map((u, i) => {
-                            const total = u.completedTasks + u.inWorkTasks + u.failedTasks;
-                            const doneRate = total ? Math.round((u.completedTasks / total) * 100) : 0;
-                            const isMe = meName && u.name === meName;
+            <table className={s.table} aria-label="Пользователи">
+                <thead>
+                    <tr>
+                        <th className={s.colNum}>#</th>
+                        <th
+                            className={s.sortable}
+                            title="Сортировать по имени A→Z"
+                            onClick={() => onSortChange("nameAsc")}
+                        >
+                            Имя
+                        </th>
+                        <th
+                            className={s.sortable}
+                            title="Сортировать по выполнено ↓"
+                            onClick={() => onSortChange("completedDesc")}
+                        >
+                            Выполнено
+                        </th>
+                        <th
+                            className={s.sortable}
+                            title="Сортировать по «в работе» ↓"
+                            onClick={() => onSortChange("inWorkDesc")}
+                        >
+                            В работе
+                        </th>
+                        <th
+                            className={s.sortable}
+                            title="Сортировать по просрочено ↓"
+                            onClick={() => onSortChange("failedDesc")}
+                        >
+                            Просрочено
+                        </th>
+                        <th>Всего / %</th>
+                        <th className={s.colBar}>Визуал</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {data.map((u, i) => {
+                        const total = u.completedTasks + u.inWorkTasks + u.failedTasks;
+                        const doneRate = total ? Math.round((u.completedTasks / total) * 100) : 0;
+                        const totalPct = total ? Math.round((u.completedTasks / total) * 100) : 0;
+                        const rank = pageRankOffset + i + 1;
 
-                            return (
-                                <tr key={u.id} className={isMe ? s.me : undefined}>
-                                    <td>{pageRankOffset + i + 1}</td>
-                                    <td className={s.person}>
-                                        <img
-                                            className={s.ava}
-                                            src={u.ava || fallbackAva}
-                                            alt={u.name}
-                                            loading="lazy"
-                                            onError={(e) => {
-                                                const img = e.currentTarget as HTMLImageElement;
-                                                if (img.src !== fallbackAva) img.src = fallbackAva;
-                                            }}
-                                        />
-                                        <span className={s.name}>{u.name}</span>
-                                        {isMe && <i className={s.badge}>я</i>}
-                                    </td>
-                                    <td className={s.center}>{u.completedTasks}</td>
-                                    <td className={s.center}>{u.inWorkTasks}</td>
-                                    <td className={s.center}>{u.failedTasks}</td>
-                                    <td className={s.center}><b>{total}</b> / {doneRate}%</td>
-                                    <td style={{ minWidth: 160 }}>
-                                        <ChartBars completed={u.completedTasks} inWork={u.inWorkTasks} failed={u.failedTasks} />
-                                    </td>
-                                </tr>
-                            );
-                        })}
-                    </tbody>
-                </table>
-            </div>
+                        return (
+                            <tr key={u.id} className={meName && u.name === meName ? s.meRow : undefined}>
+                                <td className={s.colNum}>{rank}</td>
 
-            {data.length === 0 && <div className={s.empty}>Нет пользователей для отображения</div>}
+                                {/* Аватар 44px + бейджи */}
+                                <td className={s.userCell}>
+                                    <img
+                                        className={s.ava}
+                                        src={u.ava || fallbackAva}
+                                        alt={u.name}
+                                        width={44}
+                                        height={44}
+                                        onError={(e) => {
+                                            const img = e.currentTarget as HTMLImageElement;
+                                            if (img.src !== fallbackAva) img.src = fallbackAva;
+                                        }}
+                                    />
+                                    <div className={s.nameBox}>
+                                        <b className={s.name}>{u.name}</b>
+                                        <div className={s.badges}>
+                                            <DoneRateBadge doneRate={doneRate} />
+                                            <OverdueBadge failed={u.failedTasks} total={total} />
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td>{u.completedTasks}</td>
+                                <td>{u.inWorkTasks}</td>
+                                <td>{u.failedTasks}</td>
+                                <td>{total} / {totalPct}%</td>
+
+                                <td className={s.colBar}>
+                                    <div className={s.bar}>
+                                        <span className={s.barFill} style={{ width: `${totalPct}%` }} />
+                                    </div>
+                                </td>
+                            </tr>
+                        );
+                    })}
+                </tbody>
+            </table>
         </div>
     );
 }
+
+function humanSort(mode: SortMode) {
+    switch (mode) {
+        case "completedDesc": return "Выполнено";
+        case "failedDesc": return "Просрочено";
+        case "inWorkDesc": return "В работе";
+        case "nameAsc": return "Имя (A→Z)";
+        default: return "—";
+    }
+}
+
 

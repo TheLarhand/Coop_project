@@ -104,6 +104,7 @@ export const myTasksApi = {
             status: res.data.status,
             author: String(res.data.author),
             result: res.data.result,
+            performer: res.data.performer
         };
     },
 };
@@ -135,6 +136,64 @@ export const tasksApi = {
         }
     },
 };
+
+// --- DELEGATED TASKS ---
+export const delegatedTasksApi = {
+    getTasks: async (
+        creds?: Credentials,
+        start = 0,
+        limit = 10
+    ): Promise<Task[]> => {
+        const res = await axios_api.get("/task-api/delegatedTasks", {
+            params: { start, limit },
+            auth: creds ? { username: creds.username, password: creds.password } : undefined,
+        });
+
+        return res.data.map((t: any) => ({
+            id: t.taskId,
+            title: t.title,
+            description: t.description,
+            deadline: t.deadline,
+            status: t.status,
+            author: String(t.author),
+            result: t.result,
+            performer: t.performer,
+        }));
+    },
+
+    deleteTask: async (taskId: number, creds?: Credentials): Promise<void> => {
+        await axios_api.delete(`/task-api/delegatedTasks/${taskId}`, {
+            auth: creds ? { username: creds.username, password: creds.password } : undefined,
+        });
+    },
+
+    updateTask: async (
+        taskId: number,
+        update: Partial<Pick<TaskCreatePayload, "title" | "description" | "deadline">>,
+        creds?: Credentials
+    ): Promise<Task> => {
+        const res = await axios_api.put(
+            `/task-api/delegatedTasks/${taskId}`,
+            update,
+            {
+                auth: creds ? { username: creds.username, password: creds.password } : undefined,
+            }
+        );
+
+        const t = res.data;
+        return {
+            id: t.taskId,
+            title: t.title,
+            description: t.description,
+            deadline: t.deadline,
+            status: t.status,
+            author: String(t.author),
+            result: t.result,
+            performer: t.performer,
+        };
+    },
+};
+
 // --- КОНЕЦ НОВОГО ---
 
 export const api = {
@@ -144,4 +203,5 @@ export const api = {
     myTasksApi,
     checkAuth,
     tasksApi,
+    delegatedTasksApi,
 };

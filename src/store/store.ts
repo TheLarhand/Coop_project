@@ -5,6 +5,7 @@ import { usersSlice } from "./slices/usersSlice";
 import { profileSlice } from "./slices/profileSlice";
 /* ДОБАВИЛОСЬ: */
 import statisticsReducer from "./slices/statisticsSlice";
+import myTasksReducer from "./slices/myTasksSlice";
 import tasksReducer from "./slices/taskAddSlice";
 
 // Конфигурация Redux store с подключенными редьюсерами
@@ -16,6 +17,7 @@ export const store = configureStore({
     profile: profileSlice.reducer,
     /* ДОБАВИЛОСЬ: */
     statistics: statisticsReducer,
+    myTasks: myTasksReducer,
     tasks: tasksReducer,
   },
 });

@@ -1,30 +1,58 @@
 import React from "react";
+import Button from "../../../shared/ui/Button/Button";
 import s from "./TaskCard.module.scss";
-import type { Task } from "../../../shared/types/types";
 
-const statusColors: Record<Task["status"], string> = {
-  "in work": s.statusWork,
-  completed: s.statusCompleted,
-  failed: s.statusFailed,
+interface TaskCardProps {
+  id: number;
+  title: string;
+  description?: string;
+  deadline: string;
+  status: "in work" | "completed" | "failed";
+  onCompleteClick: (taskId: number) => void;
+}
+
+// Маппинг статусов
+const statusMap: Record<
+  TaskCardProps["status"],
+  { label: string; className: string }
+> = {
+  "in work": { label: "В работе", className: "inWork" },
+  completed: { label: "Выполнена", className: "completed" },
+  failed: { label: "Просрочена", className: "failed" },
 };
 
-const TaskCard: React.FC<{ task: Task }> = ({ task }) => {
+const TaskCard: React.FC<TaskCardProps> = ({
+  id,
+  title,
+  description,
+  deadline,
+  status,
+  onCompleteClick,
+}) => {
+  const { label, className } = statusMap[status];
+
   return (
-    <div className={s.card}>
-      <div className={s.header}>
-        <h3>{task.title}</h3>
-        <span className={`${s.status} ${statusColors[task.status]}`}>
-          {task.status === "in work" && "В работе"}
-          {task.status === "completed" && "Выполнена"}
-          {task.status === "failed" && "Просрочена"}
-        </span>
+    <li className={`${s.card} ${s[className]}`}>
+      <div className={s.topBar}>
+        <span className={s.status}>{label}</span>
       </div>
-      <p className={s.desc}>{task.description}</p>
-      <div className={s.footer}>
-        <span className={s.deadline}>Дедлайн: {task.deadline}</span>
-        <span className={s.author}>Автор: {task.author}</span>
+
+      <div className={s.main}>
+        <div className={s.content}>
+          <small className={s.deadline}>{deadline}</small>
+          <h3 className={s.title}>{title}</h3>
+          {description && <p className={s.description}>{description}</p>}
+        </div>
+
+        {status !== "completed" && (
+          <div className={s.actions}>
+            <Button variant="primary" onClick={() => onCompleteClick(id)}>
+              Завершить
+            </Button>
+          </div>
+        )}
       </div>
-    </div>
+    </li>
   );
 };
 

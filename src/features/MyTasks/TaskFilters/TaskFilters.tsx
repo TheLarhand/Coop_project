@@ -1,65 +1,49 @@
 import React from "react";
-import s from "./TaskFilters.module.scss";
 import Select from "../../../shared/ui/Select/Select";
 import Input from "../../../shared/ui/Input/Input";
-import Button from "../../../shared/ui/Button/Button"
+import Button from "../../../shared/ui/Button/Button";
+import s from "./TaskFilters.module.scss";
 
-import type { SortDirection } from "./hooks/useFilteredTasks";
-
-interface Props {
-  filters: { status: string; deadline: string; sortDirection: SortDirection };
-  setFilters: (f: { status: string; deadline: string; sortDirection: SortDirection }) => void;
+interface TaskFilterProps {
+  statusFilter: string | null;
+  deadlineFilter: string;
+  onStatusChange: (value: string | null) => void;
+  onDeadlineChange: (value: string) => void;
+  onReset: () => void;
 }
 
-const statusOptions = [
-  { label: "Все статусы", value: "" },
-  { label: "В работе", value: "in work" },
-  { label: "Выполненные", value: "completed" },
-  { label: "Просроченные", value: "failed" },
-];
-
-const TaskFilters: React.FC<Props> = ({ filters, setFilters }) => {
-  const toggleDateSort = () => {
-    setFilters({
-      ...filters,
-      sortDirection: filters.sortDirection === "asc" ? "desc" : "asc",
-    });
-  };
-
-  const clearFilters = () => {
-    setFilters({ status: "", deadline: "", sortDirection: "" });
-  };
-
+const TaskFilter: React.FC<TaskFilterProps> = ({
+  statusFilter,
+  deadlineFilter,
+  onStatusChange,
+  onDeadlineChange,
+  onReset,
+}) => {
   return (
-    <div className={s.filters}>
-      <Select<string>
-        value={filters.status}
-        onChange={(val) => setFilters({ ...filters, status: val })}
-        options={statusOptions}
-        placeholder="Выбери статус"
-      />
-
+    <div className={s.filterWrapper}>
       <Input
         type="date"
-        value={filters.deadline}
-        onChange={(e) => setFilters({ ...filters, deadline: (e.target as HTMLInputElement).value })}
-        placeholder="Дата дедлайна"
-        className={s.short}
+        value={deadlineFilter}
+        onChange={(e) => onDeadlineChange(e.target.value)}
+        placeholder="Фильтр по дедлайну"
+        className={s.inputDate}
       />
-
-      <Button
-        variant={filters.sortDirection ? "primary" : "secondary"}
-        onClick={toggleDateSort}
-        className={s.nowrap}
-      >
-        Сортировать по дате {filters.sortDirection === "asc" ? "↑" : filters.sortDirection === "desc" ? "↓" : ""}
-      </Button>
-
-      <Button variant="danger" onClick={clearFilters}>
-        Сброс
+      <Select
+        value={statusFilter}
+        onChange={onStatusChange}
+        options={[
+          { label: "Все", value: null },
+          { label: "В работе", value: "in work" },
+          { label: "Выполненные", value: "completed" },
+          { label: "Просроченные", value: "failed" },
+        ]}
+        placeholder="Фильтр по статусу"
+      />
+      <Button variant="danger" onClick={onReset}>
+        Сбросить
       </Button>
     </div>
   );
 };
 
-export default TaskFilters;
+export default TaskFilter;

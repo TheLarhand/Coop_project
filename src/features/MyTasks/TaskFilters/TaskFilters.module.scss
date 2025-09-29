@@ -1,16 +1,16 @@
 @use "../../../styles/abstracts/variables" as *;
 
-.filters {
+.filterWrapper {
   display: flex;
   align-items: center;
-  gap: $space-lg;
-  margin-bottom: $space-lg;
-}
+  gap: $space-md;
+  margin-bottom: $space-md;
+  padding: $space-md 0;
 
-.nowrap {
-  text-wrap: nowrap;
-}
+  background-color: $bg-color;
+  border-bottom: 3px solid $color-grey-1;
 
-.short {
-  width: 200px;
+  .inputDate {
+    width: 200px;
+  }
 }

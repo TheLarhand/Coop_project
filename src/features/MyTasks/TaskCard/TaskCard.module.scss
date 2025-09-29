@@ -1,58 +1,85 @@
 @use "../../../styles/abstracts/variables" as *;
 
-.card {
-  background: $bg-color;
-  border: 1px solid $border-color;
-  border-radius: $radius-md;
-  padding: $space-md;
-  box-shadow: $shadow-sm;
-  transition: box-shadow 0.2s ease;
-
-  &:hover {
-    box-shadow: $shadow-md;
-  }
+li, ul, ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
-.header {
+.card {
+  border: 1px solid $color-grey-2;
+  border-radius: $radius-md;
+  overflow: hidden;
+  background: $bg-color;
+  box-shadow: $shadow-sm;
+  margin-bottom: $space-md;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: $space-sm;
+  flex-direction: column;
+}
 
-  h3 {
-    font-size: $font-size-lg;
-    margin: 0;
-  }
+.topBar {
+  display: flex;
+  justify-content: flex-end;
 }
 
 .status {
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: $color-white;
+  text-transform: uppercase;
   padding: 2px 8px;
   border-radius: $radius-sm;
-  font-size: $font-size-sm;
-  color: $text-color-inverse;
-  font-weight: 500;
-  text-transform: uppercase;
 }
 
-.statusWork {
-  background: $color-blue-1;
+/* Цвета статусов */
+.inWork .topBar {
+  background-color: $color-blue-1; 
 }
-.statusCompleted {
-  background: $color-green-1;
-}
-.statusFailed {
-  background: $color-red-1;
+.inWork .status {
+  background-color: $color-blue-2;
 }
 
-.desc {
-  font-size: $font-size-md;
-  margin-bottom: $space-sm;
-  color: $text-color;
+.completed .topBar {
+  background-color: $color-green-1;
+}
+.completed .status {
+  background-color: $color-green-2;
 }
 
-.footer {
+.failed .topBar {
+  background-color: $color-red-1;
+}
+.failed .status {
+  background-color: $color-red-2;
+}
+
+.main {
   display: flex;
-  justify-content: space-between;
-  font-size: $font-size-sm;
+  flex: 1;
+  gap: $space-md;
+}
+
+.content {
+  padding: $space-md;
+  flex: 1;
+}
+
+.title {
+  font-size: $font-size-lg;
+  font-weight: 600;
+  margin: 0 0 $space-xs;
+}
+
+.deadline {
   color: $text-color-light;
+}
+
+.description {
+  font-size: $font-size-md;
+  margin: 0;
+}
+
+.actions {
+  padding: $space-md;
+  margin-top: auto;
 }

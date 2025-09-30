@@ -8,26 +8,33 @@
   background: rgba(0, 0, 0, 0.85);
   z-index: 999;
   position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  box-sizing: border-box;
+  overflow-y: auto;
 }
 
 .formContainer {
   position: relative;
   width: 400px;
+  max-width: calc(100% - 48px);
   height: auto;
   border-radius: 12px;
   background-color: rgba(255, 255, 255, 0.80);
   color: rgba(0, 0, 0, 0.85);
   z-index: 101;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  padding: 12px;
+  padding: 20px;
+  box-sizing: border-box;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
 
   &__closeModal {
     width: 32px;
     height: 32px;
-    position: relative;
-    left: 88%;
+    position: absolute;
+    top: 12px;
+    right: 12px;
     transition: transform 0.2s ease-in-out;
 
     &:hover {
@@ -37,11 +44,13 @@
   }
 
   &__error {
-    color: red;
+    color: $danger-color;
     font-size: 16px;
     font-weight: 500;
     position: relative;
-    bottom: auto;
+    display: block;
+    margin-top: 6px;
+    text-align: center;
   }
 
   &__form {
@@ -50,13 +59,81 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: center;
-    gap: 15px;
+    gap: 18px;
+    padding-top: 6px;
+    box-sizing: border-box;
 
     &__title {
       font-size: 24px;
       font-weight: 600;
+      text-align: center;
+      margin: 6px 0;
+    }
+  }
+}
+
+@media (max-width: $breakpoint-lg) {
+  .formContainer {
+    width: 380px;
+    padding: 18px;
+    &__form {
+      gap: 16px;
+    }
+    &__closeModal {
+      top: 10px;
+      right: 10px;
+    }
+  }
+}
+
+@media (max-width: $breakpoint-md) {
+  .formContainer {
+    width: 340px;
+    padding: 16px;
+    border-radius: 10px;
+    &__form {
+      gap: 14px;
+    }
+    &__closeModal {
+      width: 28px;
+      height: 28px;
+      top: 10px;
+      right: 10px;
+    }
+  }
+}
+
+@media (max-width: $breakpoint-sm) {
+  .modalBackground {
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .formContainer {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 12px 12px 0 0;
+    padding: 14px;
+    margin: 0;
+    box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.25);
+
+    &__closeModal {
+      top: 10px;
+      right: 12px;
+      width: 28px;
+      height: 28px;
+    }
+
+    &__form {
+      align-items: stretch;
+      gap: 12px;
+    }
+
+    &__error {
+      text-align: left;
     }
   }
 }

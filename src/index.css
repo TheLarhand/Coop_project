@@ -1,2 +1,24 @@
+/* Базовый reset для ровной верстки */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
 
+html,
+body {
+    height: 100%;
+}
 
+img,
+svg,
+video,
+canvas {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+button {
+    font: inherit;
+}

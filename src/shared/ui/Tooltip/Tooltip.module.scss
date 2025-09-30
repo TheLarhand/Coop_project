@@ -1,0 +1,42 @@
+.wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    outline: none;
+}
+
+.tip {
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 8px);
+    transform: translateX(-50%);
+    background: #1f2937;
+    color: #fff;
+    font-size: 12px;
+    line-height: 1.2;
+    border-radius: 6px;
+    padding: 6px 8px;
+    white-space: nowrap;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .15s ease, transform .15s ease;
+    z-index: 20;
+}
+
+.arrow {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: #1f2937;
+    transform: translateX(-50%) rotate(45deg);
+    left: 50%;
+    bottom: -5px;
+    border-radius: 2px;
+}
+
+.wrap:hover .tip,
+.wrap:focus-visible .tip {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-2px);
+}

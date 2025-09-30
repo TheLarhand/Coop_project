@@ -1,0 +1,106 @@
+.page {
+    display: block;
+
+    /* единая вертикальная сетка отступов для секций на странице */
+    &>*+* {
+        margin-top: clamp(12px, 2vw, 20px);
+    }
+}
+
+.topbar {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 12px;
+}
+
+/* кнопки не «выпирают» — пусть переносятся */
+.toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
+/* короткая панель под счётчики */
+.meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    opacity: .9;
+}
+
+.divider {
+    width: 1px;
+    height: 16px;
+    background: #ddd;
+}
+
+/* 5 колонок на десктопе, с равной высотой карточек */
+.cardsGrid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 16px;
+
+    /* равная высота ячеек */
+    grid-auto-rows: 1fr;
+    align-items: stretch;
+
+    /* что бы карточка занимала всю высоту ячейки */
+    &>* {
+        height: 100%;
+    }
+
+    /* на всякий случай: ничто не вылезает по горизонтали */
+    min-width: 0;
+    overflow: visible;
+    padding: 2px;
+
+}
+
+.cardCellTop {
+    outline: 2px solid #f6c453;
+    /* мягкий жёлтый */
+    border-radius: 12px;
+    outline-offset: 2px;
+}
+
+.pager {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    align-items: center;
+}
+
+/* Адаптив колонок карточек: 5 → 4 → 3 → 2 → 1 */
+@media (max-width: 1440px) {
+    .cardsGrid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 1100px) {
+    .cardsGrid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 860px) {
+    .cardsGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* бейдж уходит под поиск */
+@media (max-width: 620px) {
+    .topbar {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 560px) {
+    .cardsGrid {
+        grid-template-columns: 1fr;
+    }
+}

@@ -7,13 +7,25 @@
     padding: $space-md;
     box-shadow: $shadow-sm;
     transition: box-shadow .15s ease, transform .15s ease, border-color .15s ease;
+
+    /* ВЫРАВНИВАНИЕ ПО ВЫСОТЕ */
+    display: flex;
+    flex-direction: column;
+    min-height: 220px;
+    /* можно подогнать под твой контент */
+    gap: 8px;
+
+    /* ничего внутри не «ломает» ширину */
+    * {
+        min-width: 0;
+    }
 }
 
 .head {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
+    /* чтобы шапка не тянула высоту */
     gap: 12px;
-    margin-bottom: 10px;
 }
 
 .avaWrap {
@@ -22,8 +34,12 @@
 }
 
 .ava {
+    width: 64px;
+    height: 64px;
     border-radius: $radius-md;
     display: block;
+    object-fit: cover;
+    /* ровный аватар */
 }
 
 .crown {
@@ -62,12 +78,24 @@
 }
 
 .list {
-    margin: 6px 0 $space-sm 0;
+    margin: 2px 0 0 0;
+    /* компактнее */
     padding-left: $space-md;
 
     li {
         color: $text-color;
     }
+}
+
+/* КЛЮЧ: «толкаем» график к низу карточки */
+.list {
+    margin-bottom: auto;
+}
+
+/* если у ChartBars есть внешний margin — можно убрать, а здесь задать общий */
+:global(.chart-bars-root) {
+    /* если знаешь корневой класс ChartBars */
+    margin-top: 8px;
 }
 
 /* подсветка «я» */

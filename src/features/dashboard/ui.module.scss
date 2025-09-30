@@ -1,0 +1,33 @@
+@use "../../styles/abstracts/variables" as *;
+
+.btn {
+    height: 38px;
+    padding: 0 14px !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    border-radius: 10px;
+    white-space: nowrap;
+}
+
+.input {
+    height: 38px;
+    padding: 0 12px;
+    border: 1px solid #bdc3c7;
+    border-radius: 10px;
+    outline: none;
+    min-width: 260px;
+    width: 100%;
+    background: #fff;
+}
+
+.input:focus {
+    border-color: #7f8c8d;
+}
+
+@media (min-width: 5000px) {
+    .input {
+        max-width: 820px;
+    }
+}

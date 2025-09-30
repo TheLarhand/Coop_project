@@ -4,10 +4,11 @@ import Button from "../shared/ui/Button/Button";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../store/store";
 
-// новые импорты
+import u from "../features/dashboard/ui.module.scss";
+import s from "./StatisticPage.module.scss";
+
 import TrendsPanel from "../features/dashboard/Trends/TrendsPanel";
 import CompletedDistribution from "../features/dashboard/Distribution/CompletedDistribution";
-
 
 import {
   fetchGlobalStatistic,
@@ -25,10 +26,9 @@ import UserStatCard from "../features/dashboard/UserStatCard/UserStatCard";
 import UsersTable from "../features/dashboard/UsersTable/UsersTable";
 import StatsHeader from "../features/dashboard/StatsHeader/StatsHeader";
 import WeeklyDelta from "../features/dashboard/WeeklyDelta/WeeklyDelta";
-
-// ⬇️ добавлено
 import MyRankBadge from "../features/dashboard/MyRankBadge/MyRankBadge";
 import Podium from "../features/dashboard/Podium/Podium";
+import Tooltip from "../shared/ui/Tooltip/Tooltip";
 
 import { exportUsersStatToCSV } from "../shared/utils/csv";
 import { exportUsersStatToXLSX } from "../shared/utils/xlsxExport";
@@ -46,18 +46,15 @@ import {
 export default function StatisticPage() {
   const dispatch = useDispatch<AppDispatch>();
 
-  // auth/profile/statistics
   const isAuth = useSelector(selectIsAuthenticated);
   const me = useSelector(selectProfile);
   const { loading, error, sortMode } = useSelector(selectStatistics);
 
-  // загрузка
   useEffect(() => {
     dispatch(fetchGlobalStatistic());
     if (isAuth) dispatch(fetchMyStatistic());
   }, [dispatch, isAuth]);
 
-  // время визита
   const [lastVisit, setLastVisit] = useState<Date | null>(null);
   useEffect(() => {
     const prevISO = localStorage.getItem("dashboard:lastVisit");
@@ -65,13 +62,14 @@ export default function StatisticPage() {
     localStorage.setItem("dashboard:lastVisit", new Date().toISOString());
   }, []);
 
-  // Вид/поиск/пагинация
+  // Вид / поиск / пагинация / режим "только активные"
   const [view, setView] = useState<"cards" | "table">(
     (localStorage.getItem("dashboard:view") as "cards" | "table") || "cards"
   );
   const [query, setQuery] = useState(localStorage.getItem("dashboard:query") || "");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState<number>(12);
+  const [onlyActive, setOnlyActive] = useState<boolean>(false);
   const [copyOk, setCopyOk] = useState<null | string>(null);
 
   useEffect(() => { localStorage.setItem("dashboard:view", view); }, [view]);
@@ -82,9 +80,9 @@ export default function StatisticPage() {
 
   const globalTotals = useSelector(selectGlobalTotals);
   const kpis = useSelector(selectGlobalKpis);
-  const sorted = useSelector((s: RootState) => selectSorted(s, query, sortMode));
+  const sorted = useSelector((s: RootState) => selectSorted(s, query, sortMode, onlyActive));
   const { data: paginated, total, totalPages, currentPage } = useSelector((s: RootState) =>
-    selectPaginated(s, query, sortMode, page, pageSize)
+    selectPaginated(s, query, sortMode, onlyActive, page, pageSize)
   );
 
   useEffect(() => { if (page !== currentPage) setPage(currentPage); }, [currentPage, page]);
@@ -94,6 +92,14 @@ export default function StatisticPage() {
     dispatch(setSortMode(mode));
     setPage(1);
     localStorage.setItem("dashboard:sortMode", mode);
+  };
+
+  // Быстрые "Топ N": включаем onlyActive + сортировку по выполненным
+  const showTop = (n: 1 | 3 | 5) => {
+    setOnlyActive(true);
+    setSort("completedDesc");
+    setPageSize(n);
+    setPage(1);
   };
 
   const handleExportCSVAll = () => exportUsersStatToCSV(sorted);
@@ -121,172 +127,206 @@ export default function StatisticPage() {
     localStorage.removeItem("dashboard:view");
     localStorage.removeItem("dashboard:query");
     localStorage.removeItem("dashboard:lastVisit");
-    localStorage.removeItem("dashboard:lastSnapshot"); // очистка снапшота WeeklyDelta
+    localStorage.removeItem("dashboard:lastSnapshot");
     localStorage.removeItem("dashboard:sortMode");
     setView("cards"); setQuery(""); setPage(1);
+    setOnlyActive(false);
   };
-
   const handleClearTrends = () => {
     localStorage.removeItem("dashboard:history:v1");
   };
 
-  // UI
   return (
     <MainLayout>
-      <h1>Дашборд</h1>
+      <div className={s.page}>
+        <h1>Дашборд</h1>
 
-      {/* KPI-плашки */}
-      <StatsHeader
-        total={kpis.total}
-        completed={kpis.completed}
-        inWork={kpis.inWork}
-        failed={kpis.failed}
-        doneRate={kpis.doneRate}
-        avgCompletedPerUser={kpis.avgCompletedPerUser}
-        topName={kpis.top?.name ?? null}
-        antiName={kpis.anti?.name ?? null}
-      />
+        {/* KPI */}
+        <StatsHeader
+          total={kpis.total}
+          completed={kpis.completed}
+          inWork={kpis.inWork}
+          failed={kpis.failed}
+          doneRate={kpis.doneRate}
+          avgCompletedPerUser={kpis.avgCompletedPerUser}
+          topName={kpis.top?.name ?? null}
+        />
 
-      {/* динамика с последнего визита */}
-      <WeeklyDelta />
-
-      {/* подиум Top-3 */}
-      <div style={{ margin: "8px 0 14px" }}>
-        <Podium />
-      </div>
-
-      {lastVisit && (
-        <div style={{ opacity: 0.7, marginTop: 4 }}>
-          Последний визит: {lastVisit.toLocaleString()}
+        {/* Динамика + Лидерборд */}
+        <WeeklyDelta />
+        <div style={{ margin: "8px 0 14px" }}>
+          <Podium />
         </div>
-      )}
 
-      {/* Верхняя панель */}
-      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", margin: "16px 0 8px", alignItems: "center" }}>
-        <Button variant={view === "cards" ? "primary" : "secondary"} onClick={() => setView("cards")}>Карточки</Button>
-        <Button variant={view === "table" ? "primary" : "secondary"} onClick={() => setView("table")}>Таблица</Button>
+        {lastVisit && (
+          <div style={{ opacity: 0.7, marginTop: 4 }}>
+            Последний визит: {lastVisit.toLocaleString()}
+          </div>
+        )}
 
-        {/* быстрые сортировки */}
-        <Button variant="secondary" onClick={() => setSort("completedDesc")}>Сортировать по выполнено ↓</Button>
-        <Button variant="secondary" onClick={() => setSort("failedDesc")}>По просрочено ↓</Button>
-        <Button variant="secondary" onClick={() => setSort("inWorkDesc")}>По «в работе» ↓</Button>
-        <Button variant="secondary" onClick={() => setSort("nameAsc")}>По имени A→Z</Button>
-
-        <div style={{ marginLeft: "auto", display: "flex", gap: 8, alignItems: "center" }}>
-          {/* ⬇️ бейдж «моя позиция» */}
-          <MyRankBadge />
-
+        {/* Верхняя полоса: поиск слева, мой ранг справа */}
+        <div className={s.topbar}>
           <input
+            className={u.input}
             placeholder="Поиск по имени…"
             value={query}
             onChange={(e) => { setQuery(e.target.value); setPage(1); }}
-            style={{ padding: "8px 10px", border: "1px solid #bdc3c7", borderRadius: 8, minWidth: 220 }}
           />
-          <Button variant="secondary" onClick={() => dispatch(fetchGlobalStatistic())}>Обновить</Button>
-          <Button onClick={handleExportCSVAll}>CSV (всё)</Button>
-          <Button variant="secondary" onClick={handleExportCSVPage}>CSV (страница)</Button>
-          <Button variant="secondary" onClick={handleExportXLSXAll}>XLSX</Button>
-          <Button variant="secondary" onClick={handleExportJSONAll}>JSON</Button>
-          <Button variant="secondary" onClick={handleCopyTSV}>Копировать TSV</Button>
-          <Button variant="secondary" onClick={handleResetView}>Сбросить вид</Button>
-          <Button variant="secondary" onClick={handleClearTrends}>Очистить тренды</Button>
+          <Tooltip label="Моя позиция в рейтинге">
+            <MyRankBadge />
+          </Tooltip>
         </div>
-      </div>
 
-      {/* Панель: счётчики и Top-N */}
-      <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap", margin: "6px 0 10px", opacity: 0.9 }}>
-        <span>Найдено пользователей: <b>{total}</b></span>
-        <span style={{ borderLeft: "1px solid #ddd", height: 16 }} />
-        <span>Показывать: </span>
-        <Button variant={pageSize === 1 ? "primary" : "secondary"} onClick={() => { setPageSize(1); setPage(1); }}>Топ 1</Button>
-        <Button variant={pageSize === 3 ? "primary" : "secondary"} onClick={() => { setPageSize(3); setPage(1); }}>Топ 3</Button>
-        <Button variant={pageSize === 5 ? "primary" : "secondary"} onClick={() => { setPageSize(5); setPage(1); }}>Топ 5</Button>
-        {copyOk && <span style={{ color: "#27ae60" }}>{copyOk}</span>}
-      </div>
+        {/* Тулбар */}
+        <div className={s.toolbar}>
+          <Tooltip label="Карточки пользователей">
+            <Button className={u.btn} variant={view === "cards" ? "primary" : "secondary"} onClick={() => setView("cards")}>Карточки</Button>
+          </Tooltip>
 
-      {loading && <div>Загрузка…</div>}
-      {error && <div style={{ color: "red" }}>{error}</div>}
+          <Tooltip label="Табличный вид">
+            <Button className={u.btn} variant={view === "table" ? "primary" : "secondary"} onClick={() => setView("table")}>Таблица</Button>
+          </Tooltip>
 
-      {/* Глобальная сводка */}
-      {!loading && !error && (
-        <section aria-label="Глобальная сводка" style={{ margin: "12px 0 12px" }}>
-          <h3 style={{ margin: "6px 0" }}>Глобальная сводка</h3>
-          <ChartDonut
-            completed={globalTotals.completed}
-            inWork={globalTotals.inWork}
-            failed={globalTotals.failed}
-            size={96}
-            title="Глобальная статистика"
-          />
-        </section>
-      )}
+          <Tooltip label="Сортировать по выполненным ↓">
+            <Button className={u.btn} variant="secondary" onClick={() => setSort("completedDesc")}>Сортировать по выполнено ↓</Button>
+          </Tooltip>
+          <Tooltip label="Сортировать по просроченным ↓">
+            <Button className={u.btn} variant="secondary" onClick={() => setSort("failedDesc")}>По просрочено ↓</Button>
+          </Tooltip>
+          <Tooltip label="Сортировать по задачам в работе ↓">
+            <Button className={u.btn} variant="secondary" onClick={() => setSort("inWorkDesc")}>По «в работе» ↓</Button>
+          </Tooltip>
+          <Tooltip label="Сортировать по имени A→Z">
+            <Button className={u.btn} variant="secondary" onClick={() => setSort("nameAsc")}>По имени A→Z</Button>
+          </Tooltip>
 
-      {/* НОВОЕ: тренды по визитам */}
-      <TrendsPanel />
+          <div style={{ flex: 1 }} />
 
-      {/* НОВОЕ: распределение по выполненным */}
-      <CompletedDistribution />
-
-      {/* Контент */}
-      {!loading && !error && sorted.length === 0 && (
-        <div style={{ opacity: 0.7, marginTop: 12 }}>
-          Нет данных для отображения. Создайте задачи на других страницах, чтобы здесь появились цифры.
+          <Tooltip label="Обновить данные">
+            <Button className={u.btn} variant="secondary" onClick={() => dispatch(fetchGlobalStatistic())}>Обновить</Button>
+          </Tooltip>
+          <Tooltip label="Скачать всё в CSV">
+            <Button className={u.btn} onClick={handleExportCSVAll}>CSV (всё)</Button>
+          </Tooltip>
+          <Tooltip label="Скачать текущую страницу CSV">
+            <Button className={u.btn} variant="secondary" onClick={handleExportCSVPage}>CSV (страница)</Button>
+          </Tooltip>
+          <Tooltip label="Экспорт в Excel (XLSX)">
+            <Button className={u.btn} variant="secondary" onClick={handleExportXLSXAll}>XLSX</Button>
+          </Tooltip>
+          <Tooltip label="Экспорт JSON">
+            <Button className={u.btn} variant="secondary" onClick={handleExportJSONAll}>JSON</Button>
+          </Tooltip>
+          <Tooltip label="Скопировать таблицу в буфер (TSV)">
+            <Button className={u.btn} variant="secondary" onClick={handleCopyTSV}>Копировать TSV</Button>
+          </Tooltip>
+          <Tooltip label="Сбросить выбранный вид и фильтры">
+            <Button className={u.btn} variant="secondary" onClick={handleResetView}>Сбросить вид</Button>
+          </Tooltip>
+          <Tooltip label="Очистить сохранённую историю трендов">
+            <Button className={u.btn} variant="secondary" onClick={handleClearTrends}>Очистить тренды</Button>
+          </Tooltip>
         </div>
-      )}
 
-      {!loading && !error && sorted.length > 0 && (
-        <>
-          {view === "cards" ? (
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(5, minmax(0, 1fr))", // было auto-fill
-                gap: 16
-              }}
-            >
-              {paginated.map((u, i) => {
-                const isMe = !!(me && u.name === me.name);
-                const totalRow = u.completedTasks + u.inWorkTasks + u.failedTasks;
-                const rank = (currentPage - 1) * pageSize + i + 1;
-                const isTop = kpis.top?.id === u.id; // топ-1 по выполненным
+        {/* Панель: счётчики и Top-N */}
+        <div className={s.meta}>
+          <span>Найдено пользователей: <b>{total}</b></span>
+          <span className={s.divider} />
+          <span>Показывать: </span>
 
-                return (
-                  <UserStatCard
-                    key={u.id}
-                    id={u.id}
-                    name={u.name}
-                    ava={u.ava ?? null}
-                    completed={u.completedTasks}
-                    inWork={u.inWorkTasks}
-                    failed={u.failedTasks}
-                    highlight={isMe}
-                    top={isTop}          // ⬅ добавил
-                    rank={rank}
-                    total={totalRow}
-                  />
-                );
-              })}
-            </div>
-          ) : (
-            <UsersTable
-              data={paginated as UserStatistic[]}
-              sortMode={sortMode}
-              onSortChange={(m) => setSort(m)}
-              meName={me?.name || null}
-              pageRankOffset={(currentPage - 1) * pageSize}
+          <Tooltip label="Показать только лидера (с задачами)">
+            <Button className={u.btn} variant={pageSize === 1 && onlyActive ? "primary" : "secondary"} onClick={() => showTop(1)}>Топ 1</Button>
+          </Tooltip>
+          <Tooltip label="Первые три по выполненным (без нулевых)">
+            <Button className={u.btn} variant={pageSize === 3 && onlyActive ? "primary" : "secondary"} onClick={() => showTop(3)}>Топ 3</Button>
+          </Tooltip>
+          <Tooltip label="Первые пять по выполненным (без нулевых)">
+            <Button className={u.btn} variant={pageSize === 5 && onlyActive ? "primary" : "secondary"} onClick={() => showTop(5)}>Топ 5</Button>
+          </Tooltip>
+
+          {/* Кнопка “Все” — вернуть обычный режим */}
+          <Tooltip label="Показать всех пользователей">
+            <Button className={u.btn} variant={!onlyActive ? "primary" : "secondary"} onClick={() => { setOnlyActive(false); setPage(1); }}>Все</Button>
+          </Tooltip>
+
+          {copyOk && <span style={{ color: "#27ae60" }}>{copyOk}</span>}
+        </div>
+
+        {loading && <div>Загрузка…</div>}
+        {error && <div style={{ color: "red" }}>{error}</div>}
+
+        {/* Глобальная сводка */}
+        {!loading && !error && (
+          <section aria-label="Глобальная сводка" style={{ margin: "12px 0 12px" }}>
+            <h3 style={{ margin: "6px 0" }}>Глобальная сводка</h3>
+            <ChartDonut
+              completed={globalTotals.completed}
+              inWork={globalTotals.inWork}
+              failed={globalTotals.failed}
+              size={96}
+              title="Глобальная статистика"
             />
-          )}
+          </section>
+        )}
 
-          {/* Пагинация */}
-          <div style={{ display: "flex", justifyContent: "center", gap: 8, marginTop: 16, alignItems: "center" }}>
-            <Button variant="secondary" onClick={() => setPage(1)} disabled={currentPage === 1}>« Первая</Button>
-            <Button variant="secondary" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1}>Назад</Button>
-            <span style={{ opacity: 0.75 }}>{currentPage} / {totalPages}</span>
-            <Button variant="secondary" onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}>Вперёд</Button>
-            <Button variant="secondary" onClick={() => setPage(totalPages)} disabled={currentPage === totalPages}>Последняя »</Button>
+        <TrendsPanel />
+        <CompletedDistribution />
+
+        {/* Контент */}
+        {!loading && !error && sorted.length === 0 && (
+          <div style={{ opacity: 0.7, marginTop: 12 }}>
+            Нет данных для отображения. Создайте задачи на других страницах, чтобы здесь появились цифры.
           </div>
-        </>
-      )}
+        )}
+
+        {!loading && !error && sorted.length > 0 && (
+          <>
+            {view === "cards" ? (
+              <div className={s.cardsGrid}>
+                {paginated.map((u, i) => {
+                  const isMe = !!(me && u.name === me.name);
+                  const totalRow = u.completedTasks + u.inWorkTasks + u.failedTasks;
+                  const rank = (currentPage - 1) * pageSize + i + 1;
+                  const isTop = kpis.top?.id === u.id;
+
+                  return (
+                    <UserStatCard
+                      key={u.id}
+                      id={u.id}
+                      name={u.name}
+                      ava={u.ava ?? null}
+                      completed={u.completedTasks}
+                      inWork={u.inWorkTasks}
+                      failed={u.failedTasks}
+                      highlight={isMe}
+                      top={isTop}
+                      rank={rank}
+                      total={totalRow}
+                    />
+                  );
+                })}
+              </div>
+            ) : (
+              <UsersTable
+                data={paginated as UserStatistic[]}
+                sortMode={sortMode}
+                onSortChange={(m) => setSort(m)}
+                meName={me?.name || null}
+                pageRankOffset={(currentPage - 1) * pageSize}
+              />
+            )}
+
+            {/* Пагинация */}
+            <div className={s.pager}>
+              <Button className={u.btn} variant="secondary" onClick={() => setPage(1)} disabled={currentPage === 1}>« Первая</Button>
+              <Button className={u.btn} variant="secondary" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1}>Назад</Button>
+              <span style={{ opacity: 0.75 }}>{currentPage} / {totalPages}</span>
+              <Button className={u.btn} variant="secondary" onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}>Вперёд</Button>
+              <Button className={u.btn} variant="secondary" onClick={() => setPage(totalPages)} disabled={currentPage === totalPages}>Последняя »</Button>
+            </div>
+          </>
+        )}
+      </div>
     </MainLayout>
   );
 }

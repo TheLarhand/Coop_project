@@ -1,6 +1,7 @@
 .wrap {
     display: grid;
-    grid-template-columns: repeat(8, minmax(160px, 1fr));
+    grid-template-columns: repeat(7, minmax(160px, 1fr));
+    /* было 8 */
     gap: 12px;
     margin: 8px 0 12px;
 }
@@ -14,6 +15,7 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
+    min-height: 72px;
 }
 
 .k {
@@ -30,4 +32,29 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+/* адаптив без скачков */
+@media (max-width: 1280px) {
+    .wrap {
+        grid-template-columns: repeat(4, minmax(160px, 1fr));
+    }
+}
+
+@media (max-width: 900px) {
+    .wrap {
+        grid-template-columns: repeat(3, minmax(160px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .wrap {
+        grid-template-columns: repeat(2, minmax(160px, 1fr));
+    }
+}
+
+@media (max-width: 480px) {
+    .wrap {
+        grid-template-columns: 1fr;
+    }
 }

@@ -6,24 +6,38 @@ import type { UserStatistic } from "../../shared/types/types";
 /** База */
 export const selectGlobal = (s: RootState) => s.statistics.global;
 
-/** Фильтрация по имени */
+/** Фильтрация по имени + onlyActive (без нулевых) */
 export const makeSelectFiltered = () =>
     createSelector(
-        [selectGlobal, (_: RootState, query: string) => query],
-        (global, query) => {
+        [
+            selectGlobal,
+            (_: RootState, query: string) => query,
+            (_: RootState, __: string, ___: SortMode, onlyActive: boolean) => onlyActive,
+        ],
+        (global, query, onlyActive) => {
             const q = query.trim().toLowerCase();
-            if (!q) return global;
-            return global.filter((u) => u.name.toLowerCase().includes(q));
+            let arr = q ? global.filter((u) => u.name.toLowerCase().includes(q)) : global;
+
+            if (onlyActive) {
+                arr = arr.filter(
+                    (u) => (u.completedTasks + u.inWorkTasks + u.failedTasks) > 0
+                );
+            }
+            return arr;
         }
     );
 
-/** Сортировка (стабильная: при равенстве — по имени RU) */
+/** Сортировка (стабильная; при равенстве — по имени RU) */
 export const makeSelectSorted = () =>
     createSelector(
-        [makeSelectFiltered(), (_: RootState, __: string, sortMode: SortMode) => sortMode],
+        [
+            makeSelectFiltered(),
+            (_: RootState, __: string, sortMode: SortMode) => sortMode,
+        ],
         (filtered, sortMode) => {
             const collator = new Intl.Collator("ru");
             const arr = [...filtered];
+
             switch (sortMode) {
                 case "completedDesc":
                     arr.sort(
@@ -59,8 +73,8 @@ export const makeSelectPaginated = () =>
     createSelector(
         [
             makeSelectSorted(),
-            (_: RootState, __: string, ___: SortMode, page: number) => page,
-            (_: RootState, __: string, ___: SortMode, ____, pageSize: number) => pageSize,
+            (_: RootState, __: string, ___: SortMode, ____: boolean, page: number) => page,
+            (_: RootState, __: string, ___: SortMode, ____: boolean, _____: number, pageSize: number) => pageSize,
         ],
         (sorted: UserStatistic[], page, pageSize) => {
             const total = sorted.length;
@@ -84,7 +98,7 @@ export const selectGlobalTotals = createSelector([selectGlobal], (global) => {
     );
 });
 
-/** KPI + лидерборд + корректные Top/Anti */
+/** KPI + лидер по выполненным */
 export const selectGlobalKpis = createSelector([selectGlobal], (global) => {
     const users = global.length;
     let completed = 0, inWork = 0, failed = 0;
@@ -106,17 +120,6 @@ export const selectGlobalKpis = createSelector([selectGlobal], (global) => {
     );
     const top = byCompleted[0]?.completedTasks > 0 ? byCompleted[0] : null;
 
-    // анти-лидер — по failedTasks; если у всех 0 — null
-    const byFailed = [...global].sort(
-        (a, b) => b.failedTasks - a.failedTasks || collator.compare(a.name, b.name)
-    );
-    const hasAnyFailed = byFailed[0]?.failedTasks > 0;
-
-    // Не допускаем совпадение top/anti: исключаем top из поиска анти
-    const anti = hasAnyFailed
-        ? (top ? byFailed.find((u) => u.id !== top.id) ?? null : byFailed[0])
-        : null;
-
     const leaderboard = byCompleted
         .filter((u) => u.completedTasks > 0)
         .slice(0, 5)
@@ -133,12 +136,9 @@ export const selectGlobalKpis = createSelector([selectGlobal], (global) => {
         completed,
         inWork,
         failed,
-        doneRate,
+        doneRate,               // 0..100 (%)
         avgCompletedPerUser,
-        top,
-        anti,
+        top,                    // может быть null
         leaderboard,
     };
 });
-
-

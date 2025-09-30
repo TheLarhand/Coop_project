@@ -2,7 +2,7 @@
 
 .profileCard {
   position: relative;
-  width: $breakpoint-xl;
+  width: min($breakpoint-xl, 100%);
   margin: 0 auto;
   background: $bg-color;
   border: 1px solid $border-color;
@@ -103,6 +103,7 @@
     font-size: 18px;
     color: $text-color;
   }
+
   span {
     color: $text-color-light;
     font-size: $font-size-sm;
@@ -143,6 +144,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+
       img {
         width: 88px;
         height: 88px;
@@ -196,7 +198,6 @@
           padding: 0;
           font-weight: 600;
           transition: transform 0.35s;
-
           &:hover {
             transform: translateY(-3px);
           }
@@ -207,11 +208,18 @@
 }
 
 @keyframes appearUp {
-  from { opacity: 0; transform: translateY(8px) scale(.995); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(.995);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
-button:focus-visible, .authCard button:focus-visible {
+button:focus-visible,
+.authCard button:focus-visible {
   outline: 3px solid color-mix(in srgb, $primary-color 20%, $color-white);
   outline-offset: 3px;
 }
@@ -288,7 +296,7 @@ button:focus-visible, .authCard button:focus-visible {
   font-size: $font-size-lg;
   position: relative;
   justify-self: center;
-  top: 35vh;
+  margin-top: 25vh;
   text-align: center;
   font-weight: 600;
 }
@@ -302,9 +310,9 @@ button:focus-visible, .authCard button:focus-visible {
   gap: 5px;
   position: relative;
   justify-self: center;
-  top: 25vh;
+  margin-top: 15vh;
 
- .loading {
+  .loading {
     font-size: $font-size-xl;
     font-weight: 500;
   }
@@ -320,29 +328,179 @@ button:focus-visible, .authCard button:focus-visible {
 }
 
 @keyframes donutAnim {
-  0% {
-    transform: rotate(0deg);
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@media (max-width: $breakpoint-lg) {
+  .header {
+    padding: $space-md $space-md $space-sm;
+    gap: $space-sm;
+    margin-top: -32px;
   }
-  100% {
-    transform: rotate(360deg);
+
+  .userAvatarXL {
+    width: 84px;
+    height: 84px;
+    border-width: 3px;
+  }
+
+  .displayName {
+    font-size: 24px;
+  }
+
+  .actions {
+    margin-top: 20px;
+  }
+
+  .kpis {
+    grid-template-columns: repeat(3, minmax(120px, 1fr));
+    gap: $space-sm;
+  }
+
+  .cover {
+    height: 110px;
   }
 }
 
 @media (max-width: $breakpoint-md) {
-  .authContainer {
-    padding: $space-md 12px;
-    .authCard {
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    gap: $space-sm;
+    margin-top: -30px;
+  }
 
-      .art { margin-top: -12px; }
-      .authBody {
-        .actionsRow {
-          justify-content: center;
-          flex-wrap: wrap;
-        }
-      }
+  .identity {
+    width: 100%;
+    align-items: center;
+    gap: $space-sm;
+  }
+
+  .nameBlock {
+    margin-top: 8px;
+  }
+
+  .displayName {
+    font-size: 22px;
+  }
+
+  .actions {
+    width: 100%;
+    justify-content: flex-end;
+    margin-top: -30px;
+    gap: $space-sm;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    button {
+      padding: 8px 12px;
+    }
+  }
+
+  .kpis {
+    grid-template-columns: repeat(2, minmax(120px, 1fr));
+  }
+
+  .avatarPreview {
+    &__img {
+      width: 96px;
+      height: 96px;
+    }
+  }
+
+  .cover {
+    height: 100px;
+  }
+
+  .error {
+    margin-top: 18vh;
+  }
+
+  .loadingContainer {
+    margin-top: 12vh;
+  }
+}
+
+@media (max-width: $breakpoint-sm) {
+  .header {
+    align-items: center;
+    text-align: center;
+    padding: $space-md 12px $space-sm;
+    margin-top: -28px;
+  }
+
+  .identity {
+    flex-direction: column;
+    gap: $space-sm;
+  }
+
+  .userAvatarXL {
+    width: 72px;
+    height: 72px;
+    border-width: 3px;
+  }
+
+  .nameBlock {
+    margin-top: 6px;
+  }
+
+  .displayName {
+    font-size: 20px;
+  }
+
+  .username {
+    font-size: $font-size-sm;
+  }
+
+  .actions {
+    width: 100%;
+    justify-content: center;
+    margin-top: 10px;
+    gap: $space-sm;
+    button {
+      width: 100%;
+      max-width: 260px;
+    }
+  }
+
+  .kpis {
+    grid-template-columns: 1fr;
+    gap: $space-sm;
+  }
+
+  .userStatCardWrap {
+    margin-top: $space-sm;
+  }
+
+  .avatarPreview {
+    &__img {
+      width: 80px;
+      height: 80px;
+    }
+  }
+
+  .cover {
+    height: 90px;
+  }
+
+  .error {
+    margin-top: 12vh;
+    font-size: $font-size-md;
+    padding: 0 12px;
+  }
+
+  .loadingContainer {
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10vh;
+  }
+
+  .authContainer {
+    padding: $space-md 8px;
+    .authCard {
+      padding: $space-md;
     }
   }
 }

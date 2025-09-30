@@ -7,6 +7,7 @@ import { profileSlice } from "./slices/profileSlice";
 import statisticsReducer from "./slices/statisticsSlice";
 import myTasksReducer from "./slices/myTasksSlice";
 import tasksReducer from "./slices/taskAddSlice";
+import { delegatedTasksSlice } from "./slices/delegatedTasksSlice";
 
 // Конфигурация Redux store с подключенными редьюсерами
 export const store = configureStore({
@@ -19,6 +20,7 @@ export const store = configureStore({
     statistics: statisticsReducer,
     myTasks: myTasksReducer,
     tasks: tasksReducer,
+    delegatedTasks: delegatedTasksSlice.reducer,
   },
 });
 

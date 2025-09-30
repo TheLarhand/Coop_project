@@ -38,6 +38,7 @@ export interface Task {
     status: "in work" | "completed" | "failed";
     author: string;
     result?: string;
+    performer: number;
 }
 
 export interface TaskCreatePayload {

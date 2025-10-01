@@ -9,6 +9,8 @@ interface CompleteModalProps {
   onCommentChange: (value: string) => void;
   onCancel: () => void;
   onConfirm: () => void;
+  isOverdue?: boolean;
+  overdueInfo?: string;
 }
 
 const CompleteModal: React.FC<CompleteModalProps> = ({
@@ -17,6 +19,8 @@ const CompleteModal: React.FC<CompleteModalProps> = ({
   onCommentChange,
   onCancel,
   onConfirm,
+  isOverdue = false,
+  overdueInfo = ""
 }) => {
   const [error, setError] = useState("");
 
@@ -35,6 +39,15 @@ const CompleteModal: React.FC<CompleteModalProps> = ({
     <div className={s.overlay}>
       <div className={s.modal}>
         <h3 className={s.title}>Комментарий к задаче</h3>
+
+        {isOverdue && (
+          <div className={s.overdueWarning}>
+            <div className={s.warningText}>
+              <strong>⚠️ Задача просрочена</strong>
+              {overdueInfo && <span>{overdueInfo}</span>}
+            </div>
+          </div>
+        )}
 
         <Textarea
           value={comment}

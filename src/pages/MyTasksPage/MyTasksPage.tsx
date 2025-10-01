@@ -28,6 +28,7 @@ const MyTasksPage: React.FC = () => {
   // Модальное окно
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentTaskId, setCurrentTaskId] = useState<number | null>(null);
+  const [currentTask, setCurrentTask] = useState<any>(null);
   const [comment, setComment] = useState("");
 
   // Загрузка данных
@@ -52,12 +53,44 @@ const MyTasksPage: React.FC = () => {
     return "in work";
   };
 
+  // Проверка просрочки задачи
+  const isTaskOverdue = (task: any): boolean => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const deadline = new Date(task.deadline);
+    deadline.setHours(0, 0, 0, 0);
+
+    return deadline < today;
+  };
+
+  // Получение информации о просрочке
+  const getOverdueInfo = (task: any): string => {
+    if (!isTaskOverdue(task)) return "";
+
+    const today = new Date();
+    const deadline = new Date(task.deadline);
+    const diffTime = Math.abs(today.getTime() - deadline.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    return ` (Просрочено на ${diffDays} ${getDayText(diffDays)})`;
+  };
+
+  // Склонение слова "день"
+  const getDayText = (days: number): string => {
+    if (days % 10 === 1 && days % 100 !== 11) return "день";
+    if (days % 10 >= 2 && days % 10 <= 4 && (days % 100 < 10 || days % 100 >= 20)) return "дня";
+    return "дней";
+  };
+
   // Мемоизированные отфильтрованные задачи
   const filteredItems = useMemo(() => {
     return items
       .map(task => ({
         ...task,
-        status: getFrontStatus(task)
+        status: getFrontStatus(task),
+        isOverdue: isTaskOverdue(task),
+        overdueInfo: getOverdueInfo(task)
       }))
       .filter(task => {
         // Фильтрация по статусу
@@ -108,15 +141,26 @@ const MyTasksPage: React.FC = () => {
 
   // Обработчики
   const handleCompleteClick = (taskId: number) => {
+    const task = items.find(t => t.id === taskId);
     setCurrentTaskId(taskId);
+    setCurrentTask(task);
     setComment("");
     setIsModalOpen(true);
   };
 
   const handleConfirmComplete = () => {
-    if (currentTaskId !== null) {
+    if (currentTaskId !== null && currentTask) {
       const today = new Date().toLocaleDateString("ru-RU");
-      const finalComment = `${comment} (Выполнено: ${today})`;
+
+      // Формируем комментарий с информацией о просрочке
+      let finalComment = comment;
+
+      if (isTaskOverdue(currentTask)) {
+        const overdueInfo = getOverdueInfo(currentTask);
+        finalComment = `${comment} ${overdueInfo} (Выполнено: ${today})`;
+      } else {
+        finalComment = `${comment} (Выполнено: ${today})`;
+      }
 
       dispatch(
         completeMyTask({
@@ -126,6 +170,7 @@ const MyTasksPage: React.FC = () => {
       );
     }
     setIsModalOpen(false);
+    setCurrentTask(null);
   };
 
   const handleResetFilters = () => {
@@ -201,8 +246,13 @@ const MyTasksPage: React.FC = () => {
           isOpen={isModalOpen}
           comment={comment}
           onCommentChange={setComment}
-          onCancel={() => setIsModalOpen(false)}
+          onCancel={() => {
+            setIsModalOpen(false);
+            setCurrentTask(null);
+          }}
           onConfirm={handleConfirmComplete}
+          isOverdue={currentTask ? isTaskOverdue(currentTask) : false}
+          overdueInfo={currentTask ? getOverdueInfo(currentTask) : ""}
         />
       </div>
     </MainLayout>

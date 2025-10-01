@@ -48,8 +48,8 @@ const TaskFilter: React.FC<TaskFilterProps> = ({
         onChange={(value) => onSortChange(value as "asc" | "desc" | null)}
         options={[
           { label: "Без сортировки", value: null },
-          { label: "Сначала старые", value: "asc" },
-          { label: "Сначала новые", value: "desc" },
+          { label: "По ранним срокам", value: "asc" },
+          { label: "По поздним срокам", value: "desc" },
         ]}
         placeholder="Сортировка по дате"
       />

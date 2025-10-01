@@ -45,7 +45,14 @@ const MyTasksPage: React.FC = () => {
   // фронтовый статус
   const getFrontStatus = (task: any): "completed" | "failed" | "in work" => {
     if (task.status === "completed") return "completed";
-    if (new Date(task.deadline) < new Date()) return "failed";
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const deadline = new Date(task.deadline);
+    deadline.setHours(0, 0, 0, 0);
+
+    if (deadline < today) return "failed";
     return "in work";
   };
 

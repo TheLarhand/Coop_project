@@ -8,6 +8,7 @@ interface TaskCardProps {
   description?: string;
   deadline: string;
   status: "in work" | "completed" | "failed";
+  result?: string;
   onCompleteClick: (taskId: number) => void;
 }
 
@@ -27,6 +28,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
   description,
   deadline,
   status,
+  result,
   onCompleteClick,
 }) => {
   const { label, className } = statusMap[status];
@@ -42,6 +44,8 @@ const TaskCard: React.FC<TaskCardProps> = ({
           <small className={s.deadline}>{deadline}</small>
           <h3 className={s.title}>{title}</h3>
           {description && <p className={s.description}>{description}</p>}
+
+          {result && <p>{result}</p>}
         </div>
 
         {status !== "completed" && (

@@ -1,12 +1,20 @@
 @use "../../../styles/abstracts/variables" as *;
 
-.modalBackground {
+.modalOverlay {
   left: 0;
   top: 0;
   width: 100vw;
   height: 100vh;
   background: rgba(0, 0, 0, 0.85);
-  z-index: 999;
+  z-index: 100;
+  position: absolute;
+}
+
+.modalBackground {
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
   position: absolute;
   display: flex;
   align-items: center;
@@ -36,6 +44,7 @@
     top: 12px;
     right: 12px;
     transition: transform 0.2s ease-in-out;
+    z-index: 999;
 
     &:hover {
       cursor: pointer;

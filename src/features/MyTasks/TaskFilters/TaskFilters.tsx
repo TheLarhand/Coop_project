@@ -3,21 +3,32 @@ import Select from "../../../shared/ui/Select/Select";
 import Input from "../../../shared/ui/Input/Input";
 import Button from "../../../shared/ui/Button/Button";
 import s from "./TaskFilters.module.scss";
+import type { User } from "../../../shared/types/types";
 
 interface TaskFilterProps {
   statusFilter: string | null;
   deadlineFilter: string;
+  authorFilter: string | null;
+  sortOrder: "asc" | "desc" | null;
   onStatusChange: (value: string | null) => void;
   onDeadlineChange: (value: string) => void;
+  onAuthorChange: (value: string | null) => void;
+  onSortChange: (value: "asc" | "desc" | null) => void;
   onReset: () => void;
+  users: User[];
 }
 
 const TaskFilter: React.FC<TaskFilterProps> = ({
   statusFilter,
   deadlineFilter,
+  authorFilter,
+  sortOrder,
   onStatusChange,
   onDeadlineChange,
+  onAuthorChange,
+  onSortChange,
   onReset,
+  users
 }) => {
   return (
     <div className={s.filterWrapper}>
@@ -28,6 +39,7 @@ const TaskFilter: React.FC<TaskFilterProps> = ({
         placeholder="Фильтр по дедлайну"
         className={s.inputDate}
       />
+      
       <Select
         value={statusFilter}
         onChange={onStatusChange}
@@ -39,6 +51,31 @@ const TaskFilter: React.FC<TaskFilterProps> = ({
         ]}
         placeholder="Фильтр по статусу"
       />
+
+      <Select
+        value={authorFilter}
+        onChange={onAuthorChange}
+        options={[
+          { label: "Все авторы", value: null },
+          ...users.map(user => ({
+            label: user.name,
+            value: user.id.toString()
+          }))
+        ]}
+        placeholder="Фильтр по автору"
+      />
+
+      <Select
+        value={sortOrder}
+        onChange={(value) => onSortChange(value as "asc" | "desc" | null)}
+        options={[
+          { label: "Без сортировки", value: null },
+          { label: "По ранним срокам", value: "asc" },
+          { label: "По поздним срокам", value: "desc" },
+        ]}
+        placeholder="Сортировка по дате"
+      />
+
       <Button variant="danger" onClick={onReset}>
         Сбросить
       </Button>

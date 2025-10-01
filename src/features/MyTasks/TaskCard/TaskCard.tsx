@@ -1,13 +1,10 @@
 import React from "react";
 import Button from "../../../shared/ui/Button/Button";
 import s from "./TaskCard.module.scss";
+import type { Task, User } from "../../../shared/types/types";
 
-interface TaskCardProps {
-  id: number;
-  title: string;
-  description?: string;
-  deadline: string;
-  status: "in work" | "completed" | "failed";
+interface TaskCardProps extends Task {
+  users: User[];
   onCompleteClick: (taskId: number) => void;
 }
 
@@ -23,13 +20,17 @@ const statusMap: Record<
 
 const TaskCard: React.FC<TaskCardProps> = ({
   id,
+  author,
   title,
   description,
   deadline,
   status,
+  result,
+  users,
   onCompleteClick,
 }) => {
   const { label, className } = statusMap[status];
+  const user = users.find((u) => u.id === Number(author));
 
   return (
     <li className={`${s.card} ${s[className]}`}>
@@ -39,18 +40,24 @@ const TaskCard: React.FC<TaskCardProps> = ({
 
       <div className={s.main}>
         <div className={s.content}>
-          <small className={s.deadline}>{deadline}</small>
+          <div className={s.header}>
+            {user?.ava && <img src={user.ava} alt={user.name} className={s.avatar} />}
+            <span className={s.author}>{user?.name ?? "Неизвестный автор"}</span>
+            {status !== "completed" && (
+              <div className={s.actions}>
+                <Button variant="primary" onClick={() => onCompleteClick(id)}>
+                  Завершить
+                </Button>
+              </div>
+            )}
+          </div>
+
+          <small className={s.deadline}>Дедлайн: {deadline}</small>
           <h3 className={s.title}>{title}</h3>
           {description && <p className={s.description}>{description}</p>}
-        </div>
 
-        {status !== "completed" && (
-          <div className={s.actions}>
-            <Button variant="primary" onClick={() => onCompleteClick(id)}>
-              Завершить
-            </Button>
-          </div>
-        )}
+          {result && <p className={s.result}>{result}</p>}
+        </div>
       </div>
     </li>
   );

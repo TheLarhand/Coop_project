@@ -7,7 +7,7 @@ li, ul, ol {
 }
 
 .card {
-  border: 1px solid $color-grey-2;
+  border: 1px solid $border-color;
   border-radius: $radius-md;
   overflow: hidden;
   background: $bg-color;
@@ -59,6 +59,26 @@ li, ul, ol {
   gap: $space-md;
 }
 
+.header {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  margin-bottom: $space-xs;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid $border-color;
+}
+
+.author {
+  font-size: $font-size-lg;
+  font-weight: bold;
+}
+
 .content {
   padding: $space-md;
   flex: 1;
@@ -67,7 +87,7 @@ li, ul, ol {
 .title {
   font-size: $font-size-lg;
   font-weight: 600;
-  margin: 0 0 $space-xs;
+  margin-bottom: $space-xs;
 }
 
 .deadline {
@@ -76,10 +96,15 @@ li, ul, ol {
 
 .description {
   font-size: $font-size-md;
-  margin: 0;
+}
+
+.result {
+  background-color: lighten($color-yellow-1, 40%);
+  padding: $space-xs;
+  border-radius: $radius-sm;
+  margin-top: $space-xs;
 }
 
 .actions {
-  padding: $space-md;
-  margin-top: auto;
+  margin-left: auto;
 }

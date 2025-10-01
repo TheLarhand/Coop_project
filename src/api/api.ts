@@ -60,6 +60,16 @@ export const statisticsApi = {
 
 
 // myTaskApi
+interface TaskResponse {
+    taskId: number;
+    title: string;
+    author: number;
+    performer: number;
+    deadline: string;
+    status: string;
+    description: string;
+    result: string | null;
+}
 
 export const myTasksApi = {
     getAll: async ({
@@ -68,19 +78,20 @@ export const myTasksApi = {
         start,
         limit,
     }: Credentials & { start?: number; limit?: number }): Promise<Task[]> => {
-        const res = await axios_api.get("/task-api/myTasks", {
+        const res = await axios_api.get<TaskResponse[]>("/task-api/myTasks", {
             auth: { username, password },
             params: { start, limit },
         });
 
-        return res.data.map((t: any) => ({
+        return res.data.map((t) => ({
             id: t.taskId,
             title: t.title,
             description: t.description,
             deadline: t.deadline,
             status: t.status,
-            author: String(t.author),
+            author: t.author,
             result: t.result,
+            performer: t.performer,
         }));
     },
 
@@ -90,7 +101,7 @@ export const myTasksApi = {
         taskId,
         result,
     }: Credentials & { taskId: number; result: string }): Promise<Task> => {
-        const res = await axios_api.put(
+        const res = await axios_api.put<TaskResponse>(
             `/task-api/myTasks/${taskId}`,
             { result },
             { auth: { username, password } }
@@ -102,13 +113,12 @@ export const myTasksApi = {
             description: res.data.description,
             deadline: res.data.deadline,
             status: res.data.status,
-            author: String(res.data.author),
+            author: res.data.author,
             result: res.data.result,
-            performer: res.data.performer
+            performer: res.data.performer,
         };
     },
 };
-
 // ↑↑↑ myTaskApi
 
 

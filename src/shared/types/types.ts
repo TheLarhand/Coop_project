@@ -33,12 +33,12 @@ export interface MyStatistic {
 export interface Task {
     id: number;
     title: string;
-    description: string;
-    deadline: string;
-    status: "in work" | "completed" | "failed";
     author: number;
-    result?: string;
     performer: number;
+    deadline: string;
+    status: string;
+    description: string;
+    result: string | null;
 }
 
 export interface TaskCreatePayload {

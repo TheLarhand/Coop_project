@@ -7,16 +7,20 @@ import s from "./TaskFilters.module.scss";
 interface TaskFilterProps {
   statusFilter: string | null;
   deadlineFilter: string;
+  sortOrder: "asc" | "desc" | null;
   onStatusChange: (value: string | null) => void;
   onDeadlineChange: (value: string) => void;
+  onSortChange: (value: "asc" | "desc" | null) => void;
   onReset: () => void;
 }
 
 const TaskFilter: React.FC<TaskFilterProps> = ({
   statusFilter,
   deadlineFilter,
+  sortOrder,
   onStatusChange,
   onDeadlineChange,
+  onSortChange,
   onReset,
 }) => {
   return (
@@ -39,6 +43,17 @@ const TaskFilter: React.FC<TaskFilterProps> = ({
         ]}
         placeholder="Фильтр по статусу"
       />
+      <Select
+        value={sortOrder}
+        onChange={(value) => onSortChange(value as "asc" | "desc" | null)}
+        options={[
+          { label: "Без сортировки", value: null },
+          { label: "Сначала старые", value: "asc" },
+          { label: "Сначала новые", value: "desc" },
+        ]}
+        placeholder="Сортировка по дате"
+      />
+
       <Button variant="danger" onClick={onReset}>
         Сбросить
       </Button>

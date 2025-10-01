@@ -22,13 +22,7 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, onCompleteClick }) => {
       {tasks.map((task) => (
         <TaskCard
           key={task.id}
-          author={task.author}
-          id={task.id}
-          title={task.title}
-          description={task.description}
-          deadline={task.deadline}
-          status={task.status}
-          result={task.result}
+          {...task}
           users={users}
           onCompleteClick={onCompleteClick}
         />

@@ -1,16 +1,9 @@
 import React from "react";
 import Button from "../../../shared/ui/Button/Button";
 import s from "./TaskCard.module.scss";
-import type { User } from "../../../shared/types/types";
+import type { Task, User } from "../../../shared/types/types";
 
-interface TaskCardProps {
-  id: number;
-  author: number;
-  title: string;
-  description?: string;
-  deadline: string;
-  status: "in work" | "completed" | "failed";
-  result?: string;
+interface TaskCardProps extends Task {
   users: User[];
   onCompleteClick: (taskId: number) => void;
 }
@@ -49,7 +42,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
         <div className={s.content}>
           <div className={s.header}>
             {user?.ava && <img src={user.ava} alt={user.name} className={s.avatar} />}
-            <span className={s.author}>{user?.name ?? "Загрузка..."}</span>
+            <span className={s.author}>{user?.name ?? "Неизвестный автор"}</span>
             {status !== "completed" && (
               <div className={s.actions}>
                 <Button variant="primary" onClick={() => onCompleteClick(id)}>

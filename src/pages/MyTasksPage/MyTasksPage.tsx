@@ -83,7 +83,15 @@ const MyTasksPage: React.FC = () => {
 
   const handleConfirmComplete = () => {
     if (currentTaskId !== null) {
-      dispatch(completeMyTask({ taskId: currentTaskId, result: comment }) as any);
+      const today = new Date().toLocaleDateString("ru-RU");
+      const finalComment = `${comment} (Выполнено: ${today})`;
+
+      dispatch(
+        completeMyTask({
+          taskId: currentTaskId,
+          result: finalComment,
+        }) as any
+      );
     }
     setIsModalOpen(false);
   };

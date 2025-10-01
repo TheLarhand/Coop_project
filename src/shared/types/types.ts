@@ -36,7 +36,7 @@ export interface Task {
     description: string;
     deadline: string;
     status: "in work" | "completed" | "failed";
-    author: string;
+    author: number;
     result?: string;
     performer: number;
 }

@@ -18,20 +18,23 @@ const ProfileModal: React.FC<ModalShellProps> = ({
     ...rest
     }) => {
     return (
-        <div className={s.modalBackground} {...rest} role="dialog" aria-modal="true">
-            <div className={s.formContainer}>
-                <img
-                    className={s.formContainer__closeModal}
-                    src="/closeModal.svg"
-                    alt="close"
-                    onClick={onClose}
-                />
-                <form className={s.formContainer__form} onSubmit={onSubmit}>
-                    {render ? render() : children}
-                    {modalError && <span className={s.formContainer__error}>{modalError}</span>}
-                </form>
+        <>
+            <div className={s.modalOverlay} onClick={onClose}></div>
+            <div className={s.modalBackground} {...rest} role="dialog" aria-modal="true">
+                <div className={s.formContainer}>
+                    <img
+                        className={s.formContainer__closeModal}
+                        src="/closeModal.svg"
+                        alt="close"
+                        onClick={onClose}
+                    />
+                    <form className={s.formContainer__form} onSubmit={onSubmit}>
+                        {render ? render() : children}
+                        {modalError && <span className={s.formContainer__error}>{modalError}</span>}
+                    </form>
+                </div>
             </div>
-        </div>
+        </>
     );
 };
 

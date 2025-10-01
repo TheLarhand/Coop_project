@@ -7,21 +7,27 @@ import s from "./TaskFilters.module.scss";
 interface TaskFilterProps {
   statusFilter: string | null;
   deadlineFilter: string;
+  authorFilter: string | null;
   sortOrder: "asc" | "desc" | null;
   onStatusChange: (value: string | null) => void;
   onDeadlineChange: (value: string) => void;
+  onAuthorChange: (value: string | null) => void;
   onSortChange: (value: "asc" | "desc" | null) => void;
   onReset: () => void;
+  users: any[]; // добавляем пропс с пользователями
 }
 
 const TaskFilter: React.FC<TaskFilterProps> = ({
   statusFilter,
   deadlineFilter,
+  authorFilter,
   sortOrder,
   onStatusChange,
   onDeadlineChange,
+  onAuthorChange,
   onSortChange,
   onReset,
+  users
 }) => {
   return (
     <div className={s.filterWrapper}>
@@ -32,6 +38,7 @@ const TaskFilter: React.FC<TaskFilterProps> = ({
         placeholder="Фильтр по дедлайну"
         className={s.inputDate}
       />
+      
       <Select
         value={statusFilter}
         onChange={onStatusChange}
@@ -43,6 +50,20 @@ const TaskFilter: React.FC<TaskFilterProps> = ({
         ]}
         placeholder="Фильтр по статусу"
       />
+
+      <Select
+        value={authorFilter}
+        onChange={onAuthorChange}
+        options={[
+          { label: "Все авторы", value: null },
+          ...users.map(user => ({
+            label: user.name,
+            value: user.id.toString()
+          }))
+        ]}
+        placeholder="Фильтр по автору"
+      />
+
       <Select
         value={sortOrder}
         onChange={(value) => onSortChange(value as "asc" | "desc" | null)}

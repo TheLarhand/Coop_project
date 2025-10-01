@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../../store/store";
 import { completeMyTask, fetchMyTasks } from "../../store/slices/myTasksSlice";
 import { fetchMyStatistic, selectStatistics } from "../../store/slices/statisticsSlice";
+import { selectAllUsers } from "../../store/slices/usersSlice"; 
 import Pagination from "../../shared/ui/Pagination/Pagination";
 import MainLayout from "../../layouts/MainLayout";
 import TaskFilter from "../../features/MyTasks/TaskFilters/TaskFilters";
@@ -15,6 +16,7 @@ const MyTasksPage: React.FC = () => {
   const { items, loading, error } = useSelector((state: RootState) => state.myTasks);
   const statistics = useSelector(selectStatistics);
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const users = useSelector(selectAllUsers);
 
   // Состояния
   const [page, setPage] = useState(1);
@@ -23,6 +25,7 @@ const MyTasksPage: React.FC = () => {
   // Фильтры
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [deadlineFilter, setDeadlineFilter] = useState<string>("");
+  const [authorFilter, setAuthorFilter] = useState<string | null>(null);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
 
   // Модальное окно
@@ -39,9 +42,15 @@ const MyTasksPage: React.FC = () => {
     }
   }, [dispatch, isAuthenticated]);
 
-  // Определение фронтового статуса задачи
-  const getFrontStatus = (task: any): "completed" | "failed" | "in work" => {
-    if (task.status === "completed") return "completed";
+  // Определение фронтового статуса задачи и проверка просрочки
+  const getTaskStatusInfo = (task: any) => {
+    if (task.status === "completed") {
+      return {
+        status: "completed" as const,
+        isOverdue: false,
+        overdueDays: 0
+      };
+    }
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -49,31 +58,30 @@ const MyTasksPage: React.FC = () => {
     const deadline = new Date(task.deadline);
     deadline.setHours(0, 0, 0, 0);
 
-    if (deadline < today) return "failed";
-    return "in work";
+    const isOverdue = deadline < today;
+
+    if (isOverdue) {
+      const diffTime = Math.abs(today.getTime() - deadline.getTime());
+      const overdueDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      return {
+        status: "failed" as const,
+        isOverdue: true,
+        overdueDays
+      };
+    }
+
+    return {
+      status: "in work" as const,
+      isOverdue: false,
+      overdueDays: 0
+    };
   };
 
-  // Проверка просрочки задачи
-  const isTaskOverdue = (task: any): boolean => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const deadline = new Date(task.deadline);
-    deadline.setHours(0, 0, 0, 0);
-
-    return deadline < today;
-  };
-
-  // Получение информации о просрочке
-  const getOverdueInfo = (task: any): string => {
-    if (!isTaskOverdue(task)) return "";
-
-    const today = new Date();
-    const deadline = new Date(task.deadline);
-    const diffTime = Math.abs(today.getTime() - deadline.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    return ` (Просрочено на ${diffDays} ${getDayText(diffDays)})`;
+  // Получение информации о просрочке для отображения
+  const getOverdueInfo = (overdueDays: number): string => {
+    if (overdueDays === 0) return "";
+    return ` (Просрочено на ${overdueDays} ${getDayText(overdueDays)})`;
   };
 
   // Склонение слова "день"
@@ -83,15 +91,26 @@ const MyTasksPage: React.FC = () => {
     return "дней";
   };
 
+  // Получение имени автора по ID
+  const getAuthorName = (authorId: number): string => {
+    const author = users.find(user => user.id === authorId);
+    return author ? `${author.name} ${author.name}` : "Неизвестный автор";
+  };
+
   // Мемоизированные отфильтрованные задачи
   const filteredItems = useMemo(() => {
     return items
-      .map(task => ({
-        ...task,
-        status: getFrontStatus(task),
-        isOverdue: isTaskOverdue(task),
-        overdueInfo: getOverdueInfo(task)
-      }))
+      .map(task => {
+        const statusInfo = getTaskStatusInfo(task);
+        return {
+          ...task,
+          status: statusInfo.status,
+          isOverdue: statusInfo.isOverdue,
+          overdueDays: statusInfo.overdueDays,
+          overdueInfo: getOverdueInfo(statusInfo.overdueDays),
+          authorName: getAuthorName(task.author)
+        };
+      })
       .filter(task => {
         // Фильтрация по статусу
         if (statusFilter && task.status !== statusFilter) {
@@ -107,6 +126,11 @@ const MyTasksPage: React.FC = () => {
           }
         }
 
+        // Фильтрация по автору
+        if (authorFilter && task.author !== parseInt(authorFilter)) {
+          return false;
+        }
+
         return true;
       })
       .sort((a, b) => {
@@ -118,7 +142,7 @@ const MyTasksPage: React.FC = () => {
         }
         return 0;
       });
-  }, [items, statusFilter, deadlineFilter, sortOrder]);
+  }, [items, statusFilter, deadlineFilter, authorFilter, sortOrder, users]);
 
   // Пагинация
   const paginatedItems = useMemo(() => {
@@ -130,7 +154,7 @@ const MyTasksPage: React.FC = () => {
   // Сброс пагинации при изменении фильтров
   useEffect(() => {
     setPage(1);
-  }, [statusFilter, deadlineFilter, sortOrder]);
+  }, [statusFilter, deadlineFilter, authorFilter, sortOrder]);
 
   // Общее количество задач
   const totalTasksCount = useMemo(() => {
@@ -142,10 +166,17 @@ const MyTasksPage: React.FC = () => {
   // Обработчики
   const handleCompleteClick = (taskId: number) => {
     const task = items.find(t => t.id === taskId);
-    setCurrentTaskId(taskId);
-    setCurrentTask(task);
-    setComment("");
-    setIsModalOpen(true);
+    if (task) {
+      const statusInfo = getTaskStatusInfo(task);
+      setCurrentTaskId(taskId);
+      setCurrentTask({
+        ...task,
+        ...statusInfo,
+        overdueInfo: getOverdueInfo(statusInfo.overdueDays)
+      });
+      setComment("");
+      setIsModalOpen(true);
+    }
   };
 
   const handleConfirmComplete = () => {
@@ -155,9 +186,8 @@ const MyTasksPage: React.FC = () => {
       // Формируем комментарий с информацией о просрочке
       let finalComment = comment;
 
-      if (isTaskOverdue(currentTask)) {
-        const overdueInfo = getOverdueInfo(currentTask);
-        finalComment = `${comment} ${overdueInfo} (Выполнено: ${today})`;
+      if (currentTask.isOverdue) {
+        finalComment = `${comment}${currentTask.overdueInfo} (Выполнено: ${today})`;
       } else {
         finalComment = `${comment} (Выполнено: ${today})`;
       }
@@ -176,13 +206,14 @@ const MyTasksPage: React.FC = () => {
   const handleResetFilters = () => {
     setStatusFilter(null);
     setDeadlineFilter("");
+    setAuthorFilter(null);
     setSortOrder(null);
     setPage(1);
   };
 
   // Отображение количества задач
   const getTasksCountText = () => {
-    if (statusFilter || deadlineFilter || sortOrder) {
+    if (statusFilter || deadlineFilter || authorFilter || sortOrder) {
       return `${filteredItems.length} из ${totalTasksCount}`;
     }
     return `${totalTasksCount}`;
@@ -210,11 +241,14 @@ const MyTasksPage: React.FC = () => {
         <TaskFilter
           statusFilter={statusFilter}
           deadlineFilter={deadlineFilter}
+          authorFilter={authorFilter}
           sortOrder={sortOrder}
           onStatusChange={setStatusFilter}
           onDeadlineChange={setDeadlineFilter}
+          onAuthorChange={setAuthorFilter}
           onSortChange={setSortOrder}
           onReset={handleResetFilters}
+          users={users}
         />
 
         {loading && <p>Загрузка...</p>}
@@ -251,8 +285,8 @@ const MyTasksPage: React.FC = () => {
             setCurrentTask(null);
           }}
           onConfirm={handleConfirmComplete}
-          isOverdue={currentTask ? isTaskOverdue(currentTask) : false}
-          overdueInfo={currentTask ? getOverdueInfo(currentTask) : ""}
+          isOverdue={currentTask ? currentTask.isOverdue : false}
+          overdueInfo={currentTask ? currentTask.overdueInfo : ""}
         />
       </div>
     </MainLayout>

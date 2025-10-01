@@ -3,6 +3,7 @@ import Select from "../../../shared/ui/Select/Select";
 import Input from "../../../shared/ui/Input/Input";
 import Button from "../../../shared/ui/Button/Button";
 import s from "./TaskFilters.module.scss";
+import type { User } from "../../../shared/types/types";
 
 interface TaskFilterProps {
   statusFilter: string | null;
@@ -14,7 +15,7 @@ interface TaskFilterProps {
   onAuthorChange: (value: string | null) => void;
   onSortChange: (value: "asc" | "desc" | null) => void;
   onReset: () => void;
-  users: any[]; // добавляем пропс с пользователями
+  users: User[];
 }
 
 const TaskFilter: React.FC<TaskFilterProps> = ({

@@ -32,51 +32,56 @@ const TaskFilter: React.FC<TaskFilterProps> = ({
 }) => {
   return (
     <div className={s.filterWrapper}>
-      <Input
-        type="date"
-        value={deadlineFilter}
-        onChange={(e) => onDeadlineChange(e.target.value)}
-        placeholder="Фильтр по дедлайну"
-        className={s.inputDate}
-      />
-      
-      <Select
-        value={statusFilter}
-        onChange={onStatusChange}
-        options={[
-          { label: "Все", value: null },
-          { label: "В работе", value: "in work" },
-          { label: "Выполненные", value: "completed" },
-          { label: "Просроченные", value: "failed" },
-        ]}
-        placeholder="Фильтр по статусу"
-      />
+      <div className={s.grid}>
+        <Input
+          type="date"
+          value={deadlineFilter}
+          onChange={(e) => onDeadlineChange(e.target.value)}
+          placeholder="Фильтр по дедлайну"
+          className={s.inputDate}
+        />
 
-      <Select
-        value={authorFilter}
-        onChange={onAuthorChange}
-        options={[
-          { label: "Все авторы", value: null },
-          ...users.map(user => ({
-            label: user.name,
-            value: user.id.toString()
-          }))
-        ]}
-        placeholder="Фильтр по автору"
-      />
+        <Select
+          value={statusFilter}
+          onChange={onStatusChange}
+          options={[
+            { label: "Все", value: null },
+            { label: "В работе", value: "in work" },
+            { label: "Выполненные", value: "completed" },
+            { label: "Просроченные", value: "failed" },
+          ]}
+          placeholder="Фильтр по статусу"
+          className={s.statusSelect}
+        />
 
-      <Select
-        value={sortOrder}
-        onChange={(value) => onSortChange(value as "asc" | "desc" | null)}
-        options={[
-          { label: "Без сортировки", value: null },
-          { label: "По ранним срокам", value: "asc" },
-          { label: "По поздним срокам", value: "desc" },
-        ]}
-        placeholder="Сортировка по дате"
-      />
+        <Select
+          value={authorFilter}
+          onChange={onAuthorChange}
+          options={[
+            { label: "Все авторы", value: null },
+            ...users.map(user => ({
+              label: user.name,
+              value: user.id.toString()
+            }))
+          ]}
+          placeholder="Фильтр по автору"
+          className={s.authorSelect}
+        />
 
-      <Button variant="danger" onClick={onReset}>
+        <Select
+          value={sortOrder}
+          onChange={(value) => onSortChange(value as "asc" | "desc" | null)}
+          options={[
+            { label: "Без сортировки", value: null },
+            { label: "По ранним срокам", value: "asc" },
+            { label: "По поздним срокам", value: "desc" },
+          ]}
+          placeholder="Сортировка по дате"
+          className={s.sortSelect}
+        />
+      </div>
+
+      <Button variant="danger" onClick={onReset} className={s.resetButton}>
         Сбросить
       </Button>
     </div>

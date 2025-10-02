@@ -1,4 +1,5 @@
 @use "../../../styles/abstracts/variables" as *;
+@use "sass:color";
 
 li, ul, ol {
   margin: 0;
@@ -12,7 +13,6 @@ li, ul, ol {
   overflow: hidden;
   background: $bg-color;
   box-shadow: $shadow-sm;
-  margin-bottom: $space-md;
   display: flex;
   flex-direction: column;
 }
@@ -99,7 +99,7 @@ li, ul, ol {
 }
 
 .result {
-  background-color: lighten($color-yellow-1, 40%);
+  background-color: color.scale($color-yellow-1, $lightness: 40%);
   padding: $space-xs;
   border-radius: $radius-sm;
   margin-top: $space-xs;

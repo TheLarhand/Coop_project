@@ -4,7 +4,7 @@
   display: flex;
   align-items: center;
   gap: $space-md;
-  margin-bottom: $space-md;
+  margin-bottom: $space-lg;
   padding: $space-md;
 
   background-color: $bg-color;
@@ -13,5 +13,32 @@
 
   .inputDate {
     width: 200px;
+  }
+
+  .grid {
+    display: contents;
+  }
+
+  @media (max-width: $breakpoint-lg) {
+    flex-direction: column;
+    .grid {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: $space-md;
+
+      .inputDate,
+      .statusSelect,
+      .authorSelect,
+      .sortSelect {
+        width: auto;
+      }
+    }
+  }
+
+  @media (max-width: $breakpoint-sm) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
   }
 }

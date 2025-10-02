@@ -8,6 +8,10 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: $space-sm;
+
+  @media (max-width: $breakpoint-md) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .empty {
